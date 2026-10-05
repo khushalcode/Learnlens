@@ -1,0 +1,1873 @@
+
+
+
+<!-- ================= HEADER ================= -->
+<header id="siteHeader" class="fixed top-0 inset-x-0 z-50 transition-all duration-500">
+  <div class="mx-auto max-w-7xl px-5 sm:px-8">
+    <div id="headerInner" class="flex items-center justify-between gap-4 py-5 transition-all duration-500">
+      <a href="#top" class="flex items-center gap-2.5 group">
+        <div class="relative h-10 w-10 rounded-2xl bg-gradient-to-br from-brand-600 to-accent-600 grid place-items-center shadow-glow overflow-hidden">
+          <svg viewBox="0 0 24 24" class="h-5 w-5 text-white" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round">
+            <circle cx="11" cy="11" r="6.4"/><path d="M20 20l-4.2-4.2"/><path d="M8.6 11.2l1.9 1.9 3.4-3.9"/>
+          </svg>
+          <span class="absolute inset-0 bg-white/25 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></span>
+        </div>
+        <div class="leading-tight">
+          <div class="font-display font-extrabold text-[19px] tracking-tight">LearnLens</div>
+          <div class="text-[10px] uppercase tracking-[0.18em] text-ink-500 dark:text-ink-400 font-semibold">Learning Analytics</div>
+        </div>
+      </a>
+
+      <nav class="hidden lg:flex items-center gap-8 text-[14px] font-medium text-ink-600 dark:text-ink-300">
+        <a href="#platform" class="link-underline hover:text-brand-600 dark:hover:text-brand-300 transition-colors">Platform</a>
+        <a href="#roles" class="link-underline hover:text-brand-600 dark:hover:text-brand-300 transition-colors">Roles</a>
+        <a href="#analytics" class="link-underline hover:text-brand-600 dark:hover:text-brand-300 transition-colors">Analytics</a>
+        <a href="#ai" class="link-underline hover:text-brand-600 dark:hover:text-brand-300 transition-colors">AI Engine</a>
+        <a href="#security" class="link-underline hover:text-brand-600 dark:hover:text-brand-300 transition-colors">Security</a>
+        <a href="#pricing" class="link-underline hover:text-brand-600 dark:hover:text-brand-300 transition-colors">Pricing</a>
+      </nav>
+
+      <div class="flex items-center gap-2.5">
+        <button id="themeToggle" aria-label="Toggle color theme"
+          class="h-10 w-10 rounded-full border border-ink-200/80 dark:border-white/10 grid place-items-center hover:border-brand-400 dark:hover:border-brand-500 hover:bg-brand-50 dark:hover:bg-white/5 transition-all duration-300">
+          <svg class="h-[18px] w-[18px] block dark:hidden text-ink-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 12.8A8.5 8.5 0 1 1 11.2 3a6.9 6.9 0 0 0 9.8 9.8z"/></svg>
+          <svg class="h-[18px] w-[18px] hidden dark:block text-amber2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4.1"/><path d="M12 2.4v2.1M12 19.5v2.1M4.2 4.2l1.5 1.5M18.3 18.3l1.5 1.5M2.4 12h2.1M19.5 12h2.1M4.2 19.8l1.5-1.5M18.3 5.7l1.5-1.5"/></svg>
+        </button>
+
+        <button data-open-auth="signin" class="hidden sm:inline-flex items-center h-10 px-4 rounded-full text-[14px] font-semibold text-ink-700 dark:text-ink-200 hover:bg-ink-100 dark:hover:bg-white/5 transition-colors">
+          Sign in
+        </button>
+        <button data-open-auth="signup" class="magnetic inline-flex items-center gap-2 h-10 sm:h-11 px-4 sm:px-5 rounded-full text-[14px] font-semibold text-white bg-gradient-to-r from-brand-600 to-accent-600 hover:from-brand-500 hover:to-accent-500 shadow-glow">
+          Get started
+          <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h13M12 5.5l6.5 6.5-6.5 6.5"/></svg>
+        </button>
+
+        <button id="menuBtn" class="lg:hidden h-10 w-10 rounded-full border border-ink-200 dark:border-white/10 grid place-items-center" aria-label="Open menu">
+          <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile menu -->
+  <div id="mobileMenu" class="lg:hidden overflow-hidden max-h-0 transition-[max-height] duration-500 ease-out">
+    <div class="mx-4 mb-4 rounded-3xl border border-ink-200/70 dark:border-white/10 bg-white/95 dark:bg-ink-900/95 backdrop-blur-xl shadow-lift p-5 space-y-1">
+      <a href="#platform" class="mobile-link block px-4 py-3 rounded-2xl hover:bg-ink-100 dark:hover:bg-white/5 font-medium">Platform</a>
+      <a href="#roles" class="mobile-link block px-4 py-3 rounded-2xl hover:bg-ink-100 dark:hover:bg-white/5 font-medium">Roles &amp; Dashboards</a>
+      <a href="#analytics" class="mobile-link block px-4 py-3 rounded-2xl hover:bg-ink-100 dark:hover:bg-white/5 font-medium">Analytics</a>
+      <a href="#ai" class="mobile-link block px-4 py-3 rounded-2xl hover:bg-ink-100 dark:hover:bg-white/5 font-medium">AI Engine</a>
+      <a href="#security" class="mobile-link block px-4 py-3 rounded-2xl hover:bg-ink-100 dark:hover:bg-white/5 font-medium">Security &amp; RLS</a>
+      <a href="#pricing" class="mobile-link block px-4 py-3 rounded-2xl hover:bg-ink-100 dark:hover:bg-white/5 font-medium">Pricing</a>
+      <button data-open-auth="signup" class="mobile-link w-full mt-2 h-12 rounded-2xl bg-gradient-to-r from-brand-600 to-accent-600 text-white font-semibold">Create free account</button>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+
+<!-- ================= HERO ================= -->
+<section class="relative pt-32 sm:pt-36 lg:pt-40 pb-16 sm:pb-24 overflow-hidden">
+  <!-- ambient background -->
+  <div class="absolute inset-0 hero-grid pointer-events-none"></div>
+  <div class="absolute -top-40 left-1/2 -translate-x-1/2 h-[520px] w-[820px] max-w-[130vw] aurora rounded-full pointer-events-none opacity-40"></div>
+  <div id="heroSpotlight" class="spotlight"></div>
+
+  <div class="relative mx-auto max-w-7xl px-5 sm:px-8">
+    <div class="grid lg:grid-cols-[1.02fr_.98fr] gap-12 lg:gap-10 items-center">
+
+      <!-- Copy -->
+      <div>
+        <div class="reveal inline-flex items-center gap-2.5 rounded-full border border-brand-200/80 dark:border-brand-400/25 bg-white/70 dark:bg-white/[.06] backdrop-blur-md px-3.5 py-1.5 text-[12px] font-semibold text-brand-700 dark:text-brand-200">
+          <span class="h-2 w-2 rounded-full bg-mint ticker-dot"></span>
+          Multimodal analysis · Rubric grading · Peer review
+        </div>
+
+        <h1 class="reveal mt-6 font-display font-extrabold tracking-[-0.035em] text-[clamp(2.55rem,6.4vw,4.65rem)] leading-[1.03]">
+          Every assignment,<br class="hidden sm:block" />
+          <span class="text-ink-500 dark:text-ink-300">understood in</span>
+          <span class="rotator-wrap" id="rotator"><span class="rotator-word">context</span></span>
+        </h1>
+
+        <p class="reveal mt-6 text-[17px] sm:text-[19px] leading-relaxed text-ink-600 dark:text-ink-300 max-w-xl">
+          LearnLens reads text, code, diagrams, audio and video submissions — then turns them into
+          rubric-aligned feedback, integrity signals and cohort-level learning analytics for
+          students, faculty, mentors, coordinators and administrators.
+        </p>
+
+        <div class="reveal mt-8 flex flex-wrap items-center gap-3">
+          <button data-open-auth="signup" class="magnetic group inline-flex items-center gap-2.5 h-[54px] px-7 rounded-full bg-ink-900 dark:bg-white text-white dark:text-ink-900 font-semibold text-[15px] shadow-lift hover:shadow-glow">
+            Start free — no card
+            <span class="inline-grid place-items-center h-7 w-7 rounded-full bg-white/15 dark:bg-ink-900/10 group-hover:translate-x-1 transition-transform duration-300">
+              <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M5 12h12M11.5 6l6 6-6 6"/></svg>
+            </span>
+          </button>
+          <a href="#analytics" class="magnetic inline-flex items-center gap-2.5 h-[54px] px-7 rounded-full border border-ink-200 dark:border-white/12 font-semibold text-[15px] hover:border-brand-400 dark:hover:border-brand-500 hover:bg-brand-50/70 dark:hover:bg-white/5 transition-colors">
+            <svg class="h-5 w-5 text-brand-600 dark:text-brand-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M7 15l3-3.2 2.4 2.2L17 9.4"/></svg>
+            Explore the analytics
+          </a>
+        </div>
+
+        <div class="reveal mt-8 flex flex-wrap items-center gap-x-7 gap-y-3 text-[13px] text-ink-500 dark:text-ink-400">
+          <div class="flex items-center gap-2">
+            <div class="flex -space-x-2">
+              <img class="h-8 w-8 rounded-full object-cover ring-2 ring-white dark:ring-ink-900" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80" alt="Educator" />
+              <img class="h-8 w-8 rounded-full object-cover ring-2 ring-white dark:ring-ink-900" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&q=80" alt="Educator" />
+              <img class="h-8 w-8 rounded-full object-cover ring-2 ring-white dark:ring-ink-900" src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&w=100&q=80" alt="Educator" />
+            </div>
+            <span><strong class="text-ink-800 dark:text-ink-100 font-semibold">12,400+</strong> educators onboard</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <svg class="h-4.5 w-4.5 text-mint" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 6.5L9.4 17 4 11.7"/></svg>
+            SOC-2 aligned · FERPA-ready RLS
+          </div>
+        </div>
+      </div>
+
+      <!-- Hero visual -->
+      <div class="relative reveal-scale">
+        <div class="relative rounded-[28px] border border-ink-200/70 dark:border-white/10 bg-white/85 dark:bg-white/[.045] backdrop-blur-xl shadow-lift overflow-hidden">
+          <!-- app top bar -->
+          <div class="flex items-center justify-between px-5 py-4 border-b border-ink-100 dark:border-white/8">
+            <div class="flex items-center gap-2.5">
+              <div class="h-8 w-8 rounded-xl bg-gradient-to-br from-brand-500 to-accent-600 grid place-items-center">
+                <svg viewBox="0 0 24 24" class="h-4 w-4 text-white" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4-4"/></svg>
+              </div>
+              <div>
+                <div class="text-[13px] font-semibold leading-none">Assignment · CS-304</div>
+                <div class="text-[11px] text-ink-500 dark:text-ink-400 mt-1">Compiler Design — Milestone 2</div>
+              </div>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <span class="h-2 w-2 rounded-full bg-mint ticker-dot"></span>
+              <span class="text-[11px] font-medium text-ink-500 dark:text-ink-400">Analysis live</span>
+            </div>
+          </div>
+
+          <!-- image + overlay -->
+          <div class="relative">
+            <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1100&q=80"
+                 alt="Students collaborating on a project" class="h-[236px] w-full object-cover" />
+            <div class="absolute inset-0 bg-gradient-to-t from-white via-white/35 to-transparent dark:from-ink-950 dark:via-ink-950/45"></div>
+
+            <div class="absolute left-4 top-4 flex flex-wrap gap-2">
+              <span class="px-2.5 py-1 rounded-full bg-white/90 dark:bg-ink-900/85 text-[11px] font-semibold text-brand-700 dark:text-brand-200 shadow-soft">Text</span>
+              <span class="px-2.5 py-1 rounded-full bg-white/90 dark:bg-ink-900/85 text-[11px] font-semibold text-accent-700 dark:text-accent-200 shadow-soft">Code</span>
+              <span class="px-2.5 py-1 rounded-full bg-white/90 dark:bg-ink-900/85 text-[11px] font-semibold text-emerald-700 dark:text-emerald-200 shadow-soft">Diagram</span>
+              <span class="px-2.5 py-1 rounded-full bg-white/90 dark:bg-ink-900/85 text-[11px] font-semibold text-amber-700 dark:text-amber-200 shadow-soft">Audio</span>
+            </div>
+          </div>
+
+          <!-- stats row -->
+          <div class="px-5 pb-5 -mt-6 relative">
+            <div class="grid grid-cols-3 gap-3">
+              <div class="sweep rounded-2xl border border-ink-100 dark:border-white/10 bg-white dark:bg-white/[.05] p-3.5 shadow-soft">
+                <div class="text-[10.5px] uppercase tracking-wider text-ink-500 dark:text-ink-400 font-semibold">Rubric score</div>
+                <div class="mt-1.5 flex items-end gap-1">
+                  <span class="font-display text-[26px] leading-none font-extrabold counter" data-count="92" data-suffix="">0</span>
+                  <span class="text-[11px] text-ink-500 dark:text-ink-400 mb-1">/100</span>
+                </div>
+                <div class="mt-2 h-1.5 rounded-full bg-ink-100 dark:bg-white/10 overflow-hidden">
+                  <div class="h-full rounded-full bg-gradient-to-r from-brand-500 to-accent-500 grow-x" style="width:92%"></div>
+                </div>
+              </div>
+              <div class="sweep rounded-2xl border border-ink-100 dark:border-white/10 bg-white dark:bg-white/[.05] p-3.5 shadow-soft">
+                <div class="text-[10.5px] uppercase tracking-wider text-ink-500 dark:text-ink-400 font-semibold">Peer avg</div>
+                <div class="mt-1.5 flex items-end gap-1">
+                  <span class="font-display text-[26px] leading-none font-extrabold counter" data-count="4.6" data-decimals="1">0</span>
+                  <span class="text-[11px] text-ink-500 dark:text-ink-400 mb-1">/5</span>
+                </div>
+                <div class="mt-2 flex gap-1">
+                  <span class="h-1.5 flex-1 rounded-full bg-amber2"></span>
+                  <span class="h-1.5 flex-1 rounded-full bg-amber2"></span>
+                  <span class="h-1.5 flex-1 rounded-full bg-amber2"></span>
+                  <span class="h-1.5 flex-1 rounded-full bg-amber2"></span>
+                  <span class="h-1.5 flex-1 rounded-full bg-ink-200 dark:bg-white/12"></span>
+                </div>
+              </div>
+              <div class="sweep rounded-2xl border border-ink-100 dark:border-white/10 bg-white dark:bg-white/[.05] p-3.5 shadow-soft">
+                <div class="text-[10.5px] uppercase tracking-wider text-ink-500 dark:text-ink-400 font-semibold">Integrity</div>
+                <div class="mt-1.5 flex items-end gap-1">
+                  <span class="font-display text-[26px] leading-none font-extrabold text-mint counter" data-count="2" data-suffix="%">0</span>
+                </div>
+                <div class="mt-2 text-[10.5px] text-ink-500 dark:text-ink-400">similarity risk</div>
+              </div>
+            </div>
+
+            <!-- AI insight -->
+            <div class="mt-3 rounded-2xl border border-brand-200/70 dark:border-brand-400/20 bg-brand-50/70 dark:bg-brand-500/10 p-4">
+              <div class="flex items-start gap-3">
+                <div class="h-9 w-9 rounded-xl bg-gradient-to-br from-brand-500 to-accent-600 grid place-items-center shrink-0">
+                  <svg class="h-4.5 w-4.5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M12 3.2l1.7 4.4 4.4 1.7-4.4 1.7L12 15.4l-1.7-4.4L5.9 9.3l4.4-1.7L12 3.2z"/><path d="M18 15.2l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8.8-2z"/></svg>
+                </div>
+                <div class="min-w-0">
+                  <div class="text-[12px] font-semibold text-brand-800 dark:text-brand-100">LearnLens insight</div>
+                  <p class="mt-1 text-[12.5px] leading-relaxed text-brand-900/85 dark:text-brand-100/80">
+                    Strong algorithmic reasoning. Syntax-tree diagram is accurate but under-labelled — suggest
+                    adding edge annotations before final grading.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- floating cards -->
+        <div class="float-a absolute -left-3 sm:-left-10 top-24 hidden sm:block">
+          <div class="rounded-2xl border border-ink-200/70 dark:border-white/10 bg-white/95 dark:bg-ink-900/95 backdrop-blur-xl shadow-lift px-4 py-3">
+            <div class="flex items-center gap-2.5">
+              <div class="h-9 w-9 rounded-xl bg-emerald-500/12 text-emerald-600 dark:text-emerald-300 grid place-items-center">
+                <svg class="h-4.5 w-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M4 17l4.5-5 3.2 3L19 8"/><path d="M15 8h4v4"/></svg>
+              </div>
+              <div>
+                <div class="text-[11px] text-ink-500 dark:text-ink-400 font-medium">Class mastery</div>
+                <div class="text-[15px] font-bold leading-tight">+12.4% this term</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="float-b absolute -right-2 sm:-right-8 bottom-16 hidden sm:block">
+          <div class="rounded-2xl border border-ink-200/70 dark:border-white/10 bg-white/95 dark:bg-ink-900/95 backdrop-blur-xl shadow-lift px-4 py-3">
+            <div class="flex items-center gap-2.5">
+              <img class="h-9 w-9 rounded-full object-cover" src="https://images.unsplash.com/photo-1544717297-fa95b6ee9643?auto=format&fit=crop&w=100&q=80" alt="Student" />
+              <div>
+                <div class="text-[11px] text-ink-500 dark:text-ink-400 font-medium">Peer review completed</div>
+                <div class="text-[15px] font-bold leading-tight">Aarav · 3 min ago</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ================= LOGO MARQUEE ================= -->
+<section class="py-8 border-y border-ink-100 dark:border-white/8 bg-ink-50/60 dark:bg-white/[.02] overflow-hidden">
+  <div class="mx-auto max-w-7xl px-5 sm:px-8">
+    <p class="text-center text-[11px] uppercase tracking-[0.22em] font-semibold text-ink-500 dark:text-ink-400">
+      Trusted by universities, coding schools &amp; K-12 districts
+    </p>
+    <div class="relative mt-6">
+      <div class="marquee gap-12 sm:gap-16 items-center">
+        <!-- set 1 -->
+        <span class="font-display text-[19px] sm:text-[22px] font-bold text-ink-400 dark:text-white/28 whitespace-nowrap">Northbridge University</span>
+        <span class="font-display text-[19px] sm:text-[22px] font-bold text-ink-400 dark:text-white/28 whitespace-nowrap">Vantage Institute</span>
+        <span class="font-display text-[19px] sm:text-[22px] font-bold text-ink-400 dark:text-white/28 whitespace-nowrap">Kestrel Academy</span>
+        <span class="font-display text-[19px] sm:text-[22px] font-bold text-ink-400 dark:text-white/28 whitespace-nowrap">Polytechnic West</span>
+        <span class="font-display text-[19px] sm:text-[22px] font-bold text-ink-400 dark:text-white/28 whitespace-nowrap">Meridian Schools</span>
+        <span class="font-display text-[19px] sm:text-[22px] font-bold text-ink-400 dark:text-white/28 whitespace-nowrap">Ashford College</span>
+        <!-- set 2 (duplicate) -->
+        <span class="font-display text-[19px] sm:text-[22px] font-bold text-ink-400 dark:text-white/28 whitespace-nowrap">Northbridge University</span>
+        <span class="font-display text-[19px] sm:text-[22px] font-bold text-ink-400 dark:text-white/28 whitespace-nowrap">Vantage Institute</span>
+        <span class="font-display text-[19px] sm:text-[22px] font-bold text-ink-400 dark:text-white/28 whitespace-nowrap">Kestrel Academy</span>
+        <span class="font-display text-[19px] sm:text-[22px] font-bold text-ink-400 dark:text-white/28 whitespace-nowrap">Polytechnic West</span>
+        <span class="font-display text-[19px] sm:text-[22px] font-bold text-ink-400 dark:text-white/28 whitespace-nowrap">Meridian Schools</span>
+        <span class="font-display text-[19px] sm:text-[22px] font-bold text-ink-400 dark:text-white/28 whitespace-nowrap">Ashford College</span>
+      </div>
+      <div class="pointer-events-none absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-ink-50 dark:from-ink-950 to-transparent"></div>
+      <div class="pointer-events-none absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-ink-50 dark:from-ink-950 to-transparent"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= STATS ================= -->
+<section class="py-16 sm:py-20">
+  <div class="mx-auto max-w-7xl px-5 sm:px-8">
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-10">
+      <div class="reveal">
+        <div class="font-display text-[clamp(2.2rem,5vw,3.15rem)] font-extrabold tracking-tight leading-none">
+          <span class="counter" data-count="2.4" data-decimals="1">0</span>M
+        </div>
+        <div class="mt-2 h-[3px] w-12 rounded-full bg-gradient-to-r from-brand-500 to-accent-500"></div>
+        <p class="mt-3 text-[14px] text-ink-600 dark:text-ink-400 leading-relaxed">Submissions analysed across text, code, media &amp; diagrams</p>
+      </div>
+      <div class="reveal" data-delay="120">
+        <div class="font-display text-[clamp(2.2rem,5vw,3.15rem)] font-extrabold tracking-tight leading-none">
+          <span class="counter" data-count="63">0</span>%
+        </div>
+        <div class="mt-2 h-[3px] w-12 rounded-full bg-gradient-to-r from-brand-500 to-accent-500"></div>
+        <p class="mt-3 text-[14px] text-ink-600 dark:text-ink-400 leading-relaxed">Less time spent on first-pass grading &amp; feedback drafting</p>
+      </div>
+      <div class="reveal" data-delay="240">
+        <div class="font-display text-[clamp(2.2rem,5vw,3.15rem)] font-extrabold tracking-tight leading-none">
+          <span class="counter" data-count="98.2" data-decimals="1">0</span>%
+        </div>
+        <div class="mt-2 h-[3px] w-12 rounded-full bg-gradient-to-r from-brand-500 to-accent-500"></div>
+        <p class="mt-3 text-[14px] text-ink-600 dark:text-ink-400 leading-relaxed">Rubric-alignment accuracy after faculty calibration</p>
+      </div>
+      <div class="reveal" data-delay="360">
+        <div class="font-display text-[clamp(2.2rem,5vw,3.15rem)] font-extrabold tracking-tight leading-none">
+          <span class="counter" data-count="41">0</span>k
+        </div>
+        <div class="mt-2 h-[3px] w-12 rounded-full bg-gradient-to-r from-brand-500 to-accent-500"></div>
+        <p class="mt-3 text-[14px] text-ink-600 dark:text-ink-400 leading-relaxed">Peer reviews facilitated with structured, moderated rubrics</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PLATFORM / FEATURES ================= -->
+<section id="platform" class="relative py-20 sm:py-28 scroll-mt-24">
+  <div class="mx-auto max-w-7xl px-5 sm:px-8">
+    <div class="max-w-3xl">
+      <div class="reveal inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-brand-600 dark:text-brand-300">
+        <span class="h-px w-8 bg-brand-500/70"></span> The platform
+      </div>
+      <h2 class="reveal mt-5 font-display text-[clamp(2.1rem,5vw,3.55rem)] font-extrabold leading-[1.08] tracking-[-0.032em]">
+        One lens for the whole <span class="shimmer-text">learning loop</span>
+      </h2>
+      <p class="reveal mt-5 text-[17px] sm:text-[18.5px] leading-relaxed text-ink-600 dark:text-ink-300">
+        From assignment authoring to moderated peer review and program-level insight — every stage is
+        connected, permissioned and measurable.
+      </p>
+    </div>
+
+    <!-- Bento -->
+    <div class="mt-12 grid grid-cols-1 md:grid-cols-6 gap-5">
+
+      <!-- big card -->
+      <div class="reveal-scale md:col-span-4 sweep group rounded-[26px] border border-ink-200/70 dark:border-white/10 bg-gradient-to-br from-white to-brand-50/40 dark:from-white/[.05] dark:to-brand-500/[.07] p-7 sm:p-9 shadow-soft hover:shadow-lift transition-shadow duration-500">
+        <div class="flex flex-wrap items-start justify-between gap-6">
+          <div class="max-w-md">
+            <div class="h-12 w-12 rounded-2xl bg-gradient-to-br from-brand-500 to-accent-600 grid place-items-center shadow-glow">
+              <svg class="h-6 w-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4H14l6 6v7.5A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5z"/><path d="M14 4v6h6"/><path d="M8 13.5h6M8 16.8h4"/></svg>
+            </div>
+            <h3 class="mt-5 font-display text-[24px] sm:text-[27px] font-bold leading-tight tracking-tight">Multimodal submission analysis</h3>
+            <p class="mt-3 text-[15.5px] leading-relaxed text-ink-600 dark:text-ink-300">
+              Essays, notebooks, repositories, lab diagrams, presentation decks and voice reflections are parsed
+              into a shared evidence model — so feedback stays consistent no matter the format.
+            </p>
+          </div>
+
+          <!-- mini visual -->
+          <div class="w-full sm:w-[248px] rounded-2xl border border-ink-200/70 dark:border-white/10 bg-white dark:bg-white/[.05] p-4 shadow-soft">
+            <div class="flex items-center justify-between text-[11px] font-semibold text-ink-500 dark:text-ink-400">
+              <span>Modality coverage</span><span class="text-brand-600 dark:text-brand-300">Live</span>
+            </div>
+            <div class="mt-4 space-y-3">
+              <div>
+                <div class="flex justify-between text-[11.5px] font-medium"><span>Written text</span><span>48%</span></div>
+                <div class="mt-1.5 h-2 rounded-full bg-ink-100 dark:bg-white/10 overflow-hidden"><div class="h-full rounded-full bg-brand-500 grow-x" style="width:48%"></div></div>
+              </div>
+              <div>
+                <div class="flex justify-between text-[11.5px] font-medium"><span>Code / notebooks</span><span>22%</span></div>
+                <div class="mt-1.5 h-2 rounded-full bg-ink-100 dark:bg-white/10 overflow-hidden"><div class="h-full rounded-full bg-accent-500 grow-x" style="width:22%;transition-delay:.12s"></div></div>
+              </div>
+              <div>
+                <div class="flex justify-between text-[11.5px] font-medium"><span>Diagrams &amp; media</span><span>30%</span></div>
+                <div class="mt-1.5 h-2 rounded-full bg-ink-100 dark:bg-white/10 overflow-hidden"><div class="h-full rounded-full bg-mint grow-x" style="width:30%;transition-delay:.24s"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- tall card -->
+      <div class="reveal-scale md:col-span-2 sweep rounded-[26px] border border-ink-200/70 dark:border-white/10 bg-ink-900 dark:bg-white/[.05] text-white p-7 shadow-lift relative overflow-hidden">
+        <div class="absolute -right-12 -top-12 h-44 w-44 rounded-full bg-accent-500/25 blur-2xl"></div>
+        <div class="relative">
+          <div class="h-12 w-12 rounded-2xl bg-white/12 border border-white/15 grid place-items-center">
+            <svg class="h-6 w-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 3.5l2 4.7 4.7 2-4.7 2-2 4.7-2-4.7-4.7-2 4.7-2 2-4.7z"/><circle cx="18.5" cy="17.5" r="2.2"/></svg>
+          </div>
+          <h3 class="mt-5 font-display text-[21px] font-bold leading-snug">Explainable AI scoring</h3>
+          <p class="mt-3 text-[14.5px] leading-relaxed text-white/72">
+            Every score links back to rubric criteria, highlighted evidence and confidence bands — never a black box.
+          </p>
+          <div class="mt-6 space-y-2.5">
+            <div class="flex items-center justify-between rounded-xl bg-white/[.07] border border-white/10 px-3.5 py-2.5">
+              <span class="text-[12.5px] text-white/80">Criterion trace</span>
+              <span class="text-[12px] font-semibold text-mint">Attached</span>
+            </div>
+            <div class="flex items-center justify-between rounded-xl bg-white/[.07] border border-white/10 px-3.5 py-2.5">
+              <span class="text-[12.5px] text-white/80">Confidence interval</span>
+              <span class="text-[12px] font-semibold text-white">±2.1</span>
+            </div>
+            <div class="flex items-center justify-between rounded-xl bg-white/[.07] border border-white/10 px-3.5 py-2.5">
+              <span class="text-[12.5px] text-white/80">Faculty override</span>
+              <span class="text-[12px] font-semibold text-amber-200">Enabled</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- three small cards -->
+      <div class="reveal-scale md:col-span-2 sweep rounded-[26px] border border-ink-200/70 dark:border-white/10 bg-white dark:bg-white/[.05] p-7 shadow-soft hover:shadow-lift transition-shadow duration-500">
+        <div class="h-11 w-11 rounded-2xl bg-amber-500/12 text-amber-600 dark:text-amber-300 grid place-items-center">
+          <svg class="h-5.5 w-5.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M17 20.5v-2a3.2 3.2 0 0 0-3.2-3.2H6.2A3.2 3.2 0 0 0 3 18.5v2"/><circle cx="10" cy="7.6" r="3.4"/><path d="M21 20.5v-2a3.2 3.2 0 0 0-2.5-3.1"/><path d="M15.6 4.3a3.4 3.4 0 0 1 0 6.5"/></svg>
+        </div>
+        <h3 class="mt-5 font-display text-[19px] font-bold">Peer review, moderated</h3>
+        <p class="mt-2.5 text-[14.5px] leading-relaxed text-ink-600 dark:text-ink-300">
+          Blind double-review, reviewer calibration, appeal workflow and bias flags built in.
+        </p>
+      </div>
+
+      <div class="reveal-scale md:col-span-2 sweep rounded-[26px] border border-ink-200/70 dark:border-white/10 bg-white dark:bg-white/[.05] p-7 shadow-soft hover:shadow-lift transition-shadow duration-500" data-delay="110">
+        <div class="h-11 w-11 rounded-2xl bg-emerald-500/12 text-emerald-600 dark:text-emerald-300 grid place-items-center">
+          <svg class="h-5.5 w-5.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3.2" y="4.2" width="17.6" height="15.6" rx="3"/><path d="M7.5 14.4l2.8-3.1 2.3 2.1 4-4.6"/><circle cx="16.6" cy="8.4" r="1.2" fill="currentColor" stroke="none"/></svg>
+        </div>
+        <h3 class="mt-5 font-display text-[19px] font-bold">Cohort analytics</h3>
+        <p class="mt-2.5 text-[14.5px] leading-relaxed text-ink-600 dark:text-ink-300">
+          Mastery heatmaps, outcome coverage, at-risk detection and trend deltas per section.
+        </p>
+      </div>
+
+      <div class="reveal-scale md:col-span-2 sweep rounded-[26px] border border-ink-200/70 dark:border-white/10 bg-white dark:bg-white/[.05] p-7 shadow-soft hover:shadow-lift transition-shadow duration-500" data-delay="220">
+        <div class="h-11 w-11 rounded-2xl bg-accent-500/12 text-accent-600 dark:text-accent-300 grid place-items-center">
+          <svg class="h-5.5 w-5.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 3l7.2 3.2v5c0 4.5-3 8.3-7.2 9.6-4.2-1.3-7.2-5.1-7.2-9.6v-5z"/><path d="M9.2 12.1l2 2 3.6-4"/></svg>
+        </div>
+        <h3 class="mt-5 font-display text-[19px] font-bold">Governed access</h3>
+        <p class="mt-2.5 text-[14.5px] leading-relaxed text-ink-600 dark:text-ink-300">
+          Row-level security by role, program and term with a full audit trail on every read.
+        </p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ================= ROLES / DASHBOARDS ================= -->
+<section id="roles" class="relative py-20 sm:py-28 scroll-mt-24 bg-ink-50/70 dark:bg-white/[.022] border-y border-ink-100 dark:border-white/8">
+  <div class="mx-auto max-w-7xl px-5 sm:px-8">
+    <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8">
+      <div class="max-w-2xl">
+        <div class="reveal inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-brand-600 dark:text-brand-300">
+          <span class="h-px w-8 bg-brand-500/70"></span> Role-based workspaces
+        </div>
+        <h2 class="reveal mt-5 font-display text-[clamp(2.05rem,4.8vw,3.45rem)] font-extrabold leading-[1.09] tracking-[-0.032em]">
+          A dashboard tuned to <br class="hidden sm:block">how each role works
+        </h2>
+      </div>
+      <p class="reveal max-w-md text-[16.5px] leading-relaxed text-ink-600 dark:text-ink-300">
+        Permissions, navigation and metrics adapt instantly — driven by Supabase auth claims and
+        row-level policies, not client-side guesswork.
+      </p>
+    </div>
+
+    <div class="mt-12 grid lg:grid-cols-[280px_1fr] gap-6">
+
+      <!-- tab list -->
+      <div class="reveal">
+        <div class="flex lg:flex-col gap-2.5 overflow-x-auto pb-2 lg:pb-0 -mx-1 px-1" role="tablist" aria-label="Roles">
+          <button class="role-tab shrink-0 flex items-center gap-3 rounded-2xl px-4 py-3.5 text-left border border-transparent text-ink-600 dark:text-ink-300 hover:bg-white/70 dark:hover:bg-white/5" role="tab" aria-selected="true" data-role="student">
+            <span class="h-9 w-9 rounded-xl bg-brand-500/12 text-brand-600 dark:text-brand-300 grid place-items-center shrink-0">
+              <svg class="h-4.5 w-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 4l9 4.4-9 4.4-9-4.4z"/><path d="M7 10.6V15c0 1.8 2.5 3.2 5 3.2s5-1.4 5-3.2v-4.4"/></svg>
+            </span>
+            <span><span class="block text-[14.5px] font-semibold">Student</span><span class="block text-[11.5px] opacity-70">Track growth</span></span>
+          </button>
+
+          <button class="role-tab shrink-0 flex items-center gap-3 rounded-2xl px-4 py-3.5 text-left border border-transparent text-ink-600 dark:text-ink-300 hover:bg-white/70 dark:hover:bg-white/5" role="tab" aria-selected="false" data-role="faculty">
+            <span class="h-9 w-9 rounded-xl bg-accent-500/12 text-accent-600 dark:text-accent-300 grid place-items-center shrink-0">
+              <svg class="h-4.5 w-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3.2" y="4.4" width="17.6" height="14" rx="2.6"/><path d="M7.6 9h8.8M7.6 12.6h5.6"/><path d="M8 20.6h8"/></svg>
+            </span>
+            <span><span class="block text-[14.5px] font-semibold">Faculty</span><span class="block text-[11.5px] opacity-70">Grade &amp; review</span></span>
+          </button>
+
+          <button class="role-tab shrink-0 flex items-center gap-3 rounded-2xl px-4 py-3.5 text-left border border-transparent text-ink-600 dark:text-ink-300 hover:bg-white/70 dark:hover:bg-white/5" role="tab" aria-selected="false" data-role="mentor">
+            <span class="h-9 w-9 rounded-xl bg-emerald-500/12 text-emerald-600 dark:text-emerald-300 grid place-items-center shrink-0">
+              <svg class="h-4.5 w-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8" r="3.4"/><path d="M5 19.4c0-3.2 3.1-5.2 7-5.2s7 2 7 5.2"/><path d="M18.6 6.4l1 2 2 .9-2 1-1 2-1-2-2-1 2-.9z"/></svg>
+            </span>
+            <span><span class="block text-[14.5px] font-semibold">Mentor</span><span class="block text-[11.5px] opacity-70">Guide cohorts</span></span>
+          </button>
+
+          <button class="role-tab shrink-0 flex items-center gap-3 rounded-2xl px-4 py-3.5 text-left border border-transparent text-ink-600 dark:text-ink-300 hover:bg-white/70 dark:hover:bg-white/5" role="tab" aria-selected="false" data-role="coordinator">
+            <span class="h-9 w-9 rounded-xl bg-amber-500/12 text-amber-600 dark:text-amber-300 grid place-items-center shrink-0">
+              <svg class="h-4.5 w-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3.2" y="12.4" width="4" height="7.4" rx="1.2"/><rect x="10" y="8.2" width="4" height="11.6" rx="1.2"/><rect x="16.8" y="4.2" width="4" height="15.6" rx="1.2"/></svg>
+            </span>
+            <span><span class="block text-[14.5px] font-semibold">Coordinator</span><span class="block text-[11.5px] opacity-70">Program view</span></span>
+          </button>
+
+          <button class="role-tab shrink-0 flex items-center gap-3 rounded-2xl px-4 py-3.5 text-left border border-transparent text-ink-600 dark:text-ink-300 hover:bg-white/70 dark:hover:bg-white/5" role="tab" aria-selected="false" data-role="admin">
+            <span class="h-9 w-9 rounded-xl bg-ink-500/12 text-ink-600 dark:text-ink-300 grid place-items-center shrink-0">
+              <svg class="h-4.5 w-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 14.2a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-2.7 1.1v.3a2 2 0 1 1-4 0v-.2a1.6 1.6 0 0 0-2.8-1.1l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1A1.6 1.6 0 0 0 3.5 13H3.2a2 2 0 1 1 0-4h.2a1.6 1.6 0 0 0 1.1-2.7l-.1-.1A2 2 0 1 1 7.2 3.3l.1.1A1.6 1.6 0 0 0 10 2.3V2a2 2 0 1 1 4 0v.2a1.6 1.6 0 0 0 2.7 1.1l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0 1.1 2.7h.3a2 2 0 1 1 0 4h-.2a1.6 1.6 0 0 0-1.3 1.6z"/></svg>
+            </span>
+            <span><span class="block text-[14.5px] font-semibold">Admin</span><span class="block text-[11.5px] opacity-70">Govern &amp; audit</span></span>
+          </button>
+        </div>
+      </div>
+
+      <!-- tab panels -->
+      <div class="reveal-scale">
+
+        <!-- STUDENT -->
+        <div class="role-panel active" data-panel="student">
+          <div class="rounded-[26px] border border-ink-200/70 dark:border-white/10 bg-white dark:bg-white/[.045] shadow-lift overflow-hidden">
+            <div class="grid lg:grid-cols-2">
+              <div class="p-7 sm:p-9">
+                <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-50 dark:bg-brand-500/12 text-brand-700 dark:text-brand-200 text-[11.5px] font-semibold">
+                  <span class="h-1.5 w-1.5 rounded-full bg-brand-500"></span> Student workspace
+                </div>
+                <h3 class="mt-5 font-display text-[26px] sm:text-[30px] font-bold leading-tight tracking-tight">See progress, not just marks</h3>
+                <p class="mt-4 text-[15.5px] leading-relaxed text-ink-600 dark:text-ink-300">
+                  Learners get a clear picture of where they stand per outcome, what feedback actually means,
+                  and which skill to practise next — with personal targets and growth over time.
+                </p>
+                <ul class="mt-6 space-y-3.5">
+                  <li class="flex items-start gap-3"><span class="mt-0.5 h-5 w-5 rounded-full bg-brand-500/12 text-brand-600 dark:text-brand-300 grid place-items-center shrink-0"><svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M20 6.5L9.4 17 4 11.7"/></svg></span><span class="text-[14.5px] text-ink-700 dark:text-ink-200">Personal mastery radar across rubric criteria</span></li>
+                  <li class="flex items-start gap-3"><span class="mt-0.5 h-5 w-5 rounded-full bg-brand-500/12 text-brand-600 dark:text-brand-300 grid place-items-center shrink-0"><svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M20 6.5L9.4 17 4 11.7"/></svg></span><span class="text-[14.5px] text-ink-700 dark:text-ink-200">Actionable feedback with linked evidence &amp; resources</span></li>
+                  <li class="flex items-start gap-3"><span class="mt-0.5 h-5 w-5 rounded-full bg-brand-500/12 text-brand-600 dark:text-brand-300 grid place-items-center shrink-0"><svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M20 6.5L9.4 17 4 11.7"/></svg></span><span class="text-[14.5px] text-ink-700 dark:text-ink-200">Peer review tasks with guided rubric prompts</span></li>
+                </ul>
+                <button data-open-auth="signup" class="mt-7 inline-flex items-center gap-2 h-11 px-5 rounded-full bg-ink-900 dark:bg-white text-white dark:text-ink-900 text-[14px] font-semibold hover:shadow-lift transition-shadow">
+                  Preview student view
+                  <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h12M11.5 6l6 6-6 6"/></svg>
+                </button>
+              </div>
+
+              <!-- mock -->
+              <div class="p-7 sm:p-9 bg-ink-50/80 dark:bg-white/[.03] border-t lg:border-t-0 lg:border-l border-ink-100 dark:border-white/8">
+                <div class="rounded-2xl border border-ink-200/70 dark:border-white/10 bg-white dark:bg-white/[.05] p-5 shadow-soft">
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                      <img class="h-11 w-11 rounded-full object-cover" src="https://images.unsplash.com/photo-1544717297-fa95b6ee9643?auto=format&fit=crop&w=120&q=80" alt="Student avatar" />
+                      <div>
+                        <div class="text-[13.5px] font-semibold leading-tight">Maya Fernandez</div>
+                        <div class="text-[11.5px] text-ink-500 dark:text-ink-400">B.Tech CS · Semester 5</div>
+                      </div>
+                    </div>
+                    <span class="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-mint/12 text-emerald-600 dark:text-emerald-300">On track</span>
+                  </div>
+
+                  <div class="mt-6 grid grid-cols-2 gap-3">
+                    <div class="rounded-xl border border-ink-100 dark:border-white/10 p-3.5">
+                      <div class="text-[10.5px] uppercase tracking-wider text-ink-500 dark:text-ink-400 font-semibold">Term GPA</div>
+                      <div class="mt-1 font-display text-[22px] font-extrabold">8.7</div>
+                    </div>
+                    <div class="rounded-xl border border-ink-100 dark:border-white/10 p-3.5">
+                      <div class="text-[10.5px] uppercase tracking-wider text-ink-500 dark:text-ink-400 font-semibold">Feedback read</div>
+                      <div class="mt-1 font-display text-[22px] font-extrabold">96%</div>
+                    </div>
+                  </div>
+
+                  <!-- mini bar chart -->
+                  <div class="mt-5">
+                    <div class="flex items-center justify-between text-[11.5px] font-semibold text-ink-500 dark:text-ink-400">
+                      <span>Outcome mastery</span><span>vs. cohort</span>
+                    </div>
+                    <div class="mt-3 flex items-end gap-2.5 h-[96px]">
+                      <div class="flex-1 flex flex-col items-center gap-2">
+                        <div class="w-full rounded-t-lg bg-gradient-to-t from-brand-600 to-brand-400 bar" style="height:62%;transition-delay:.05s"></div>
+                        <span class="text-[9.5px] text-ink-500 dark:text-ink-400">O1</span>
+                      </div>
+                      <div class="flex-1 flex flex-col items-center gap-2">
+                        <div class="w-full rounded-t-lg bg-gradient-to-t from-brand-600 to-brand-400 bar" style="height:78%;transition-delay:.12s"></div>
+                        <span class="text-[9.5px] text-ink-500 dark:text-ink-400">O2</span>
+                      </div>
+                      <div class="flex-1 flex flex-col items-center gap-2">
+                        <div class="w-full rounded-t-lg bg-gradient-to-t from-accent-600 to-accent-400 bar" style="height:48%;transition-delay:.19s"></div>
+                        <span class="text-[9.5px] text-ink-500 dark:text-ink-400">O3</span>
+                      </div>
+                      <div class="flex-1 flex flex-col items-center gap-2">
+                        <div class="w-full rounded-t-lg bg-gradient-to-t from-brand-600 to-brand-400 bar" style="height:88%;transition-delay:.26s"></div>
+                        <span class="text-[9.5px] text-ink-500 dark:text-ink-400">O4</span>
+                      </div>
+                      <div class="flex-1 flex flex-col items-center gap-2">
+                        <div class="w-full rounded-t-lg bg-gradient-to-t from-accent-600 to-accent-400 bar" style="height:70%;transition-delay:.33s"></div>
+                        <span class="text-[9.5px] text-ink-500 dark:text-ink-400">O5</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- FACULTY -->
+        <div class="role-panel" data-panel="faculty">
+          <div class="rounded-[26px] border border-ink-200/70 dark:border-white/10 bg-white dark:bg-white/[.045] shadow-lift overflow-hidden">
+            <div class="grid lg:grid-cols-2">
+              <div class="p-7 sm:p-9">
+                <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-accent-50 dark:bg-accent-500/12 text-accent-700 dark:text-accent-200 text-[11.5px] font-semibold">
+                  <span class="h-1.5 w-1.5 rounded-full bg-accent-500"></span> Faculty workspace
+                </div>
+                <h3 class="mt-5 font-display text-[26px] sm:text-[30px] font-bold leading-tight tracking-tight">Author, assign, evaluate — faster</h3>
+                <p class="mt-4 text-[15.5px] leading-relaxed text-ink-600 dark:text-ink-300">
+                  Build assignments with rubrics and modality rules, publish to sections, then review AI-prepared
+                  evaluations before releasing marks and feedback to students.
+                </p>
+                <ul class="mt-6 space-y-3.5">
+                  <li class="flex items-start gap-3"><span class="mt-0.5 h-5 w-5 rounded-full bg-accent-500/12 text-accent-600 dark:text-accent-300 grid place-items-center shrink-0"><svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M20 6.5L9.4 17 4 11.7"/></svg></span><span class="text-[14.5px] text-ink-700 dark:text-ink-200">Rubric builder with outcome &amp; weight mapping</span></li>
+                  <li class="flex items-start gap-3"><span class="mt-0.5 h-5 w-5 rounded-full bg-accent-500/12 text-accent-600 dark:text-accent-300 grid place-items-center shrink-0"><svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M20 6.5L9.4 17 4 11.7"/></svg></span><span class="text-[14.5px] text-ink-700 dark:text-ink-200">Batch grading queue with AI-suggested scores</span></li>
+                  <li class="flex items-start gap-3"><span class="mt-0.5 h-5 w-5 rounded-full bg-accent-500/12 text-accent-600 dark:text-accent-300 grid place-items-center shrink-0"><svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M20 6.5L9.4 17 4 11.7"/></svg></span><span class="text-[14.5px] text-ink-700 dark:text-ink-200">Integrity &amp; similarity flags with review history</span></li>
+                </ul>
+                <button data-open-auth="signup" class="mt-7 inline-flex items-center gap-2 h-11 px-5 rounded-full bg-ink-900 dark:bg-white text-white dark:text-ink-900 text-[14px] font-semibold hover:shadow-lift transition-shadow">
+                  Preview faculty view
+                  <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h12M11.5 6l6 6-6 6"/></svg>
+                </button>
+              </div>
+
+              <div class="p-7 sm:p-9 bg-ink-50/80 dark:bg-white/[.03] border-t lg:border-t-0 lg:border-l border-ink-100 dark:border-white/8">
+                <div class="rounded-2xl border border-ink-200/70 dark:border-white/10 bg-white dark:bg-white/[.05] p-5 shadow-soft">
+                  <div class="flex items-center justify-between">
+                    <div>
+                      <div class="text-[13px] font-semibold leading-tight">Grading queue</div>
+                      <div class="text-[11.5px] text-ink-500 dark:text-ink-400 mt-0.5">CS-304 · 42 submissions</div>
+                    </div>
+                    <button class="text-[11.5px] font-semibold px-3 py-1.5 rounded-full bg-accent-500 text-white shadow-glow">Auto-prepare</button>
+                  </div>
+
+                  <div class="mt-5 space-y-2.5">
+                    <div class="flex items-center justify-between rounded-xl border border-ink-100 dark:border-white/10 px-3.5 py-3">
+                      <div class="flex items-center gap-3">
+                        <div class="h-8 w-8 rounded-lg bg-brand-500/12 text-brand-600 dark:text-brand-300 grid place-items-center text-[11px] font-bold">AR</div>
+                        <div><div class="text-[12.5px] font-medium">Aarav R.</div><div class="text-[10.5px] text-ink-500 dark:text-ink-400">Submitted 2h ago</div></div>
+                      </div>
+                      <div class="flex items-center gap-2">
+                        <span class="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-emerald-500/12 text-emerald-600 dark:text-emerald-300">92</span>
+                        <span class="text-[10.5px] px-2 py-1 rounded-full bg-ink-100 dark:bg-white/10 text-ink-600 dark:text-ink-300">Review</span>
+                      </div>
+                    </div>
+                    <div class="flex items-center justify-between rounded-xl border border-ink-100 dark:border-white/10 px-3.5 py-3">
+                      <div class="flex items-center gap-3">
+                        <div class="h-8 w-8 rounded-lg bg-accent-500/12 text-accent-600 dark:text-accent-300 grid place-items-center text-[11px] font-bold">SL</div>
+                        <div><div class="text-[12.5px] font-medium">Sara L.</div><div class="text-[10.5px] text-ink-500 dark:text-ink-400">Submitted 5h ago</div></div>
+                      </div>
+                      <div class="flex items-center gap-2">
+                        <span class="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-amber-500/12 text-amber-600 dark:text-amber-300">74</span>
+                        <span class="text-[10.5px] px-2 py-1 rounded-full bg-amber-500/12 text-amber-700 dark:text-amber-200">Flagged</span>
+                      </div>
+                    </div>
+                    <div class="flex items-center justify-between rounded-xl border border-ink-100 dark:border-white/10 px-3.5 py-3">
+                      <div class="flex items-center gap-3">
+                        <div class="h-8 w-8 rounded-lg bg-emerald-500/12 text-emerald-600 dark:text-emerald-300 grid place-items-center text-[11px] font-bold">NK</div>
+                        <div><div class="text-[12.5px] font-medium">Nikhil K.</div><div class="text-[10.5px] text-ink-500 dark:text-ink-400">Submitted 6h ago</div></div>
+                      </div>
+                      <div class="flex items-center gap-2">
+                        <span class="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-emerald-500/12 text-emerald-600 dark:text-emerald-300">88</span>
+                        <span class="text-[10.5px] px-2 py-1 rounded-full bg-ink-100 dark:bg-white/10 text-ink-600 dark:text-ink-300">Review</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="mt-5 rounded-xl bg-brand-50/80 dark:bg-brand-500/10 border border-brand-200/60 dark:border-brand-400/20 p-3.5">
+                    <div class="text-[11px] font-semibold text-brand-800 dark:text-brand-100">Turnaround</div>
+                    <div class="mt-2 flex items-center gap-3">
+                      <div class="text-[20px] font-display font-extrabold text-brand-800 dark:text-brand-50">1.8 days</div>
+                      <div class="flex-1 h-1.5 rounded-full bg-brand-200/70 dark:bg-white/12 overflow-hidden">
+                        <div class="h-full rounded-full bg-gradient-to-r from-brand-500 to-accent-500 grow-x" style="width:74%"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MENTOR -->
+        <div class="role-panel" data-panel="mentor">
+          <div class="rounded-[26px] border border-ink-200/70 dark:border-white/10 bg-white dark:bg-white/[.045] shadow-lift overflow-hidden">
+            <div class="grid lg:grid-cols-2">
+              <div class="p-7 sm:p-9">
+                <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 text-emerald-700 dark:text-emerald-200 text-[11.5px] font-semibold">
+                  <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span> Mentor workspace
+                </div>
+                <h3 class="mt-5 font-display text-[26px] sm:text-[30px] font-bold leading-tight tracking-tight">Spot the learner who needs you</h3>
+                <p class="mt-4 text-[15.5px] leading-relaxed text-ink-600 dark:text-ink-300">
+                  Mentors see an early-warning list built from submission cadence, feedback engagement and
+                  mastery trend — plus a guided conversation plan for each mentee.
+                </p>
+                <ul class="mt-6 space-y-3.5">
+                  <li class="flex items-start gap-3"><span class="mt-0.5 h-5 w-5 rounded-full bg-emerald-500/12 text-emerald-600 dark:text-emerald-300 grid place-items-center shrink-0"><svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M20 6.5L9.4 17 4 11.7"/></svg></span><span class="text-[14.5px] text-ink-700 dark:text-ink-200">At-risk signals with explainable contributing factors</span></li>
+                  <li class="flex items-start gap-3"><span class="mt-0.5 h-5 w-5 rounded-full bg-emerald-500/12 text-emerald-600 dark:text-emerald-300 grid place-items-center shrink-0"><svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M20 6.5L9.4 17 4 11.7"/></svg></span><span class="text-[14.5px] text-ink-700 dark:text-ink-200">Session notes &amp; goal tracking per mentee</span></li>
+                  <li class="flex items-start gap-3"><span class="mt-0.5 h-5 w-5 rounded-full bg-emerald-500/12 text-emerald-600 dark:text-emerald-300 grid place-items-center shrink-0"><svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M20 6.5L9.4 17 4 11.7"/></svg></span><span class="text-[14.5px] text-ink-700 dark:text-ink-200">Progress digest emails to students &amp; guardians</span></li>
+                </ul>
+                <button data-open-auth="signup" class="mt-7 inline-flex items-center gap-2 h-11 px-5 rounded-full bg-ink-900 dark:bg-white text-white dark:text-ink-900 text-[14px] font-semibold hover:shadow-lift transition-shadow">
+                  Preview mentor view
+                  <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h12M11.5 6l6 6-6 6"/></svg>
+                </button>
+              </div>
+
+              <div class="p-7 sm:p-9 bg-ink-50/80 dark:bg-white/[.03] border-t lg:border-t-0 lg:border-l border-ink-100 dark:border-white/8">
+                <div class="rounded-2xl border border-ink-200/70 dark:border-white/10 bg-white dark:bg-white/[.05] p-5 shadow-soft">
+                  <div class="flex items-center justify-between">
+                    <div class="text-[13px] font-semibold">Early warning · Week 9</div>
+                    <span class="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-amber-500/12 text-amber-700 dark:text-amber-200">4 mentees</span>
+                  </div>
+                  <div class="mt-5 space-y-3">
+                    <div class="rounded-xl border border-ink-100 dark:border-white/10 p-3.5">
+                      <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2.5">
+                          <img class="h-8 w-8 rounded-full object-cover" src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=100&q=80" alt="Mentee" />
+                          <div><div class="text-[12.5px] font-medium">Elena V.</div><div class="text-[10.5px] text-ink-500 dark:text-ink-400">2 late submissions</div></div>
+                        </div>
+                        <span class="text-[10.5px] font-semibold px-2.5 py-1 rounded-full bg-rose-500/12 text-rose-600 dark:text-rose-300">High risk</span>
+                      </div>
+                      <div class="mt-3 h-1.5 rounded-full bg-ink-100 dark:bg-white/10 overflow-hidden">
+                        <div class="h-full rounded-full bg-gradient-to-r from-rose-400 to-amber-400 grow-x" style="width:34%"></div>
+                      </div>
+                    </div>
+                    <div class="rounded-xl border border-ink-100 dark:border-white/10 p-3.5">
+                      <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2.5">
+                          <img class="h-8 w-8 rounded-full object-cover" src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=100&q=80" alt="Mentee" />
+                          <div><div class="text-[12.5px] font-medium">Rohan M.</div><div class="text-[10.5px] text-ink-500 dark:text-ink-400">Mastery dip in O3</div></div>
+                        </div>
+                        <span class="text-[10.5px] font-semibold px-2.5 py-1 rounded-full bg-amber-500/12 text-amber-700 dark:text-amber-200">Medium</span>
+                      </div>
+                      <div class="mt-3 h-1.5 rounded-full bg-ink-100 dark:bg-white/10 overflow-hidden">
+                        <div class="h-full rounded-full bg-gradient-to-r from-amber-400 to-brand-400 grow-x" style="width:58%;transition-delay:.12s"></div>
+                      </div>
+                    </div>
+                    <div class="rounded-xl border border-ink-100 dark:border-white/10 p-3.5">
+                      <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2.5">
+                          <img class="h-8 w-8 rounded-full object-cover" src="https://images.unsplash.com/photo-1531123897727-8f129e1688ce?auto=format&fit=crop&w=100&q=80" alt="Mentee" />
+                          <div><div class="text-[12.5px] font-medium">Ishita B.</div><div class="text-[10.5px] text-ink-500 dark:text-ink-400">Improving steadily</div></div>
+                        </div>
+                        <span class="text-[10.5px] font-semibold px-2.5 py-1 rounded-full bg-emerald-500/12 text-emerald-600 dark:text-emerald-300">Low risk</span>
+                      </div>
+                      <div class="mt-3 h-1.5 rounded-full bg-ink-100 dark:bg-white/10 overflow-hidden">
+                        <div class="h-full rounded-full bg-gradient-to-r from-emerald-400 to-mint grow-x" style="width:82%;transition-delay:.24s"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- COORDINATOR -->
+        <div class="role-panel" data-panel="coordinator">
+          <div class="rounded-[26px] border border-ink-200/70 dark:border-white/10 bg-white dark:bg-white/[.045] shadow-lift overflow-hidden">
+            <div class="grid lg:grid-cols-2">
+              <div class="p-7 sm:p-9">
+                <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-500/12 text-amber-700 dark:text-amber-200 text-[11.5px] font-semibold">
+                  <span class="h-1.5 w-1.5 rounded-full bg-amber-500"></span> Coordinator workspace
+                </div>
+                <h3 class="mt-5 font-display text-[26px] sm:text-[30px] font-bold leading-tight tracking-tight">Program-level clarity, in real time</h3>
+                <p class="mt-4 text-[15.5px] leading-relaxed text-ink-600 dark:text-ink-300">
+                  Compare sections, monitor outcome coverage for accreditation, and catch moderation
+                  outliers before grades are finalised.
+                </p>
+                <ul class="mt-6 space-y-3.5">
+                  <li class="flex items-start gap-3"><span class="mt-0.5 h-5 w-5 rounded-full bg-amber-500/12 text-amber-600 dark:text-amber-300 grid place-items-center shrink-0"><svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M20 6.5L9.4 17 4 11.7"/></svg></span><span class="text-[14.5px] text-ink-700 dark:text-ink-200">Outcome attainment &amp; accreditation evidence exports</span></li>
+                  <li class="flex items-start gap-3"><span class="mt-0.5 h-5 w-5 rounded-full bg-amber-500/12 text-amber-600 dark:text-amber-300 grid place-items-center shrink-0"><svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M20 6.5L9.4 17 4 11.7"/></svg></span><span class="text-[14.5px] text-ink-700 dark:text-ink-200">Grading consistency &amp; inter-rater reliability reports</span></li>
+                  <li class="flex items-start gap-3"><span class="mt-0.5 h-5 w-5 rounded-full bg-amber-500/12 text-amber-600 dark:text-amber-300 grid place-items-center shrink-0"><svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M20 6.5L9.4 17 4 11.7"/></svg></span><span class="text-[14.5px] text-ink-700 dark:text-ink-200">Workload &amp; submission-volume distribution by instructor</span></li>
+                </ul>
+                <button data-open-auth="signup" class="mt-7 inline-flex items-center gap-2 h-11 px-5 rounded-full bg-ink-900 dark:bg-white text-white dark:text-ink-900 text-[14px] font-semibold hover:shadow-lift transition-shadow">
+                  Preview coordinator view
+                  <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h12M11.5 6l6 6-6 6"/></svg>
+                </button>
+              </div>
+
+              <div class="p-7 sm:p-9 bg-ink-50/80 dark:bg-white/[.03] border-t lg:border-t-0 lg:border-l border-ink-100 dark:border-white/8">
+                <div class="rounded-2xl border border-ink-200/70 dark:border-white/10 bg-white dark:bg-white/[.05] p-5 shadow-soft">
+                  <div class="flex items-center justify-between">
+                    <div class="text-[13px] font-semibold">Program attainment · CSE 2025</div>
+                    <span class="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-emerald-500/12 text-emerald-600 dark:text-emerald-300">Accredited</span>
+                  </div>
+
+                  <!-- radial -->
+                  <div class="mt-5 flex items-center gap-6">
+                    <div class="relative h-[118px] w-[118px] shrink-0">
+                      <svg viewBox="0 0 120 120" class="h-full w-full -rotate-90">
+                        <circle cx="60" cy="60" r="48" fill="none" stroke="currentColor" class="text-ink-100 dark:text-white/10" stroke-width="12"/>
+                        <circle cx="60" cy="60" r="48" fill="none" stroke="url(#gRad)" stroke-width="12" stroke-linecap="round"
+                                class="draw" stroke-dasharray="301.6" stroke-dashoffset="301.6" style="transition-duration:1.6s"/>
+                        <defs>
+                          <linearGradient id="gRad" x1="0" y1="0" x2="1" y2="1">
+                            <stop offset="0%" stop-color="#6366f1"/><stop offset="100%" stop-color="#7c4dfb"/>
+                          </linearGradient>
+                        </defs>
+                      </svg>
+                      <div class="absolute inset-0 grid place-items-center">
+                        <div class="text-center">
+                          <div class="font-display text-[24px] font-extrabold leading-none">86%</div>
+                          <div class="text-[10px] text-ink-500 dark:text-ink-400 mt-1">attainment</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="flex-1 space-y-3">
+                      <div>
+                        <div class="flex justify-between text-[11.5px] font-medium"><span>Sections reporting</span><span>18 / 20</span></div>
+                        <div class="mt-1.5 h-2 rounded-full bg-ink-100 dark:bg-white/10 overflow-hidden"><div class="h-full rounded-full bg-brand-500 grow-x" style="width:90%"></div></div>
+                      </div>
+                      <div>
+                        <div class="flex justify-between text-[11.5px] font-medium"><span>Outcome coverage</span><span>94%</span></div>
+                        <div class="mt-1.5 h-2 rounded-full bg-ink-100 dark:bg-white/10 overflow-hidden"><div class="h-full rounded-full bg-accent-500 grow-x" style="width:94%;transition-delay:.12s"></div></div>
+                      </div>
+                      <div>
+                        <div class="flex justify-between text-[11.5px] font-medium"><span>Moderation complete</span><span>71%</span></div>
+                        <div class="mt-1.5 h-2 rounded-full bg-ink-100 dark:bg-white/10 overflow-hidden"><div class="h-full rounded-full bg-amber-400 grow-x" style="width:71%;transition-delay:.24s"></div></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="mt-5 grid grid-cols-3 gap-2.5">
+                    <div class="rounded-xl border border-ink-100 dark:border-white/10 p-3">
+                      <div class="text-[10px] uppercase tracking-wider text-ink-500 dark:text-ink-400 font-semibold">GPA Δ</div>
+                      <div class="mt-1 font-display text-[18px] font-extrabold text-emerald-600 dark:text-emerald-300">+0.42</div>
+                    </div>
+                    <div class="rounded-xl border border-ink-100 dark:border-white/10 p-3">
+                      <div class="text-[10px] uppercase tracking-wider text-ink-500 dark:text-ink-400 font-semibold">Pass rate</div>
+                      <div class="mt-1 font-display text-[18px] font-extrabold">91.6%</div>
+                    </div>
+                    <div class="rounded-xl border border-ink-100 dark:border-white/10 p-3">
+                      <div class="text-[10px] uppercase tracking-wider text-ink-500 dark:text-ink-400 font-semibold">Outliers</div>
+                      <div class="mt-1 font-display text-[18px] font-extrabold text-amber-600 dark:text-amber-300">3</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ADMIN -->
+        <div class="role-panel" data-panel="admin">
+          <div class="rounded-[26px] border border-ink-200/70 dark:border-white/10 bg-white dark:bg-white/[.045] shadow-lift overflow-hidden">
+            <div class="grid lg:grid-cols-2">
+              <div class="p-7 sm:p-9">
+                <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-ink-100 dark:bg-white/10 text-ink-700 dark:text-ink-200 text-[11.5px] font-semibold">
+                  <span class="h-1.5 w-1.5 rounded-full bg-ink-500"></span> Admin workspace
+                </div>
+                <h3 class="mt-5 font-display text-[26px] sm:text-[30px] font-bold leading-tight tracking-tight">Governance without the guesswork</h3>
+                <p class="mt-4 text-[15.5px] leading-relaxed text-ink-600 dark:text-ink-300">
+                  Manage users, roles, departments and terms. Inspect policy coverage, review the audit log,
+                  and control exactly who can read, grade or export student data.
+                </p>
+                <ul class="mt-6 space-y-3.5">
+                  <li class="flex items-start gap-3"><span class="mt-0.5 h-5 w-5 rounded-full bg-ink-200 dark:bg-white/12 text-ink-700 dark:text-ink-200 grid place-items-center shrink-0"><svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M20 6.5L9.4 17 4 11.7"/></svg></span><span class="text-[14.5px] text-ink-700 dark:text-ink-200">User provisioning, role assignment &amp; bulk import</span></li>
+                  <li class="flex items-start gap-3"><span class="mt-0.5 h-5 w-5 rounded-full bg-ink-200 dark:bg-white/12 text-ink-700 dark:text-ink-200 grid place-items-center shrink-0"><svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M20 6.5L9.4 17 4 11.7"/></svg></span><span class="text-[14.5px] text-ink-700 dark:text-ink-200">RLS policy inspector &amp; anomaly alerts</span></li>
+                  <li class="flex items-start gap-3"><span class="mt-0.5 h-5 w-5 rounded-full bg-ink-200 dark:bg-white/12 text-ink-700 dark:text-ink-200 grid place-items-center shrink-0"><svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M20 6.5L9.4 17 4 11.7"/></svg></span><span class="text-[14.5px] text-ink-700 dark:text-ink-200">Immutable audit log with export controls</span></li>
+                </ul>
+                <button data-open-auth="signup" class="mt-7 inline-flex items-center gap-2 h-11 px-5 rounded-full bg-ink-900 dark:bg-white text-white dark:text-ink-900 text-[14px] font-semibold hover:shadow-lift transition-shadow">
+                  Preview admin view
+                  <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h12M11.5 6l6 6-6 6"/></svg>
+                </button>
+              </div>
+
+              <div class="p-7 sm:p-9 bg-ink-50/80 dark:bg-white/[.03] border-t lg:border-t-0 lg:border-l border-ink-100 dark:border-white/8">
+                <div class="rounded-2xl border border-ink-200/70 dark:border-white/10 bg-white dark:bg-white/[.05] p-5 shadow-soft">
+                  <div class="flex items-center justify-between">
+                    <div class="text-[13px] font-semibold">Role &amp; policy matrix</div>
+                    <span class="text-[11px] font-mono px-2.5 py-1 rounded-full bg-ink-100 dark:bg-white/10 text-ink-600 dark:text-ink-300">v2.4.1</span>
+                  </div>
+
+                  <div class="mt-5 overflow-hidden rounded-xl border border-ink-100 dark:border-white/10">
+                    <table class="w-full text-[11.5px]">
+                      <thead class="bg-ink-50 dark:bg-white/[.05] text-ink-500 dark:text-ink-400">
+                        <tr>
+                          <th class="text-left font-semibold px-3 py-2.5">Role</th>
+                          <th class="text-center font-semibold px-2 py-2.5">Read</th>
+                          <th class="text-center font-semibold px-2 py-2.5">Grade</th>
+                          <th class="text-center font-semibold px-2 py-2.5">Export</th>
+                        </tr>
+                      </thead>
+                      <tbody class="divide-y divide-ink-100 dark:divide-white/8">
+                        <tr>
+                          <td class="px-3 py-2.5 font-medium">Student</td>
+                          <td class="px-2 py-2.5 text-center"><span class="inline-flex h-5 w-5 rounded-full bg-emerald-500/14 text-emerald-600 dark:text-emerald-300 items-center justify-center"><svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6.5L9.4 17 4 11.7"/></svg></span></td>
+                          <td class="px-2 py-2.5 text-center text-ink-400">—</td>
+                          <td class="px-2 py-2.5 text-center text-ink-400">—</td>
+                        </tr>
+                        <tr>
+                          <td class="px-3 py-2.5 font-medium">Faculty</td>
+                          <td class="px-2 py-2.5 text-center"><span class="inline-flex h-5 w-5 rounded-full bg-emerald-500/14 text-emerald-600 dark:text-emerald-300 items-center justify-center"><svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6.5L9.4 17 4 11.7"/></svg></span></td>
+                          <td class="px-2 py-2.5 text-center"><span class="inline-flex h-5 w-5 rounded-full bg-emerald-500/14 text-emerald-600 dark:text-emerald-300 items-center justify-center"><svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6.5L9.4 17 4 11.7"/></svg></span></td>
+                          <td class="px-2 py-2.5 text-center text-ink-400">—</td>
+                        </tr>
+                        <tr>
+                          <td class="px-3 py-2.5 font-medium">Coordinator</td>
+                          <td class="px-2 py-2.5 text-center"><span class="inline-flex h-5 w-5 rounded-full bg-emerald-500/14 text-emerald-600 dark:text-emerald-300 items-center justify-center"><svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6.5L9.4 17 4 11.7"/></svg></span></td>
+                          <td class="px-2 py-2.5 text-center"><span class="inline-flex h-5 w-5 rounded-full bg-emerald-500/14 text-emerald-600 dark:text-emerald-300 items-center justify-center"><svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6.5L9.4 17 4 11.7"/></svg></span></td>
+                          <td class="px-2 py-2.5 text-center"><span class="inline-flex h-5 w-5 rounded-full bg-emerald-500/14 text-emerald-600 dark:text-emerald-300 items-center justify-center"><svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6.5L9.4 17 4 11.7"/></svg></span></td>
+                        </tr>
+                        <tr>
+                          <td class="px-3 py-2.5 font-medium">Admin</td>
+                          <td class="px-2 py-2.5 text-center"><span class="inline-flex h-5 w-5 rounded-full bg-emerald-500/14 text-emerald-600 dark:text-emerald-300 items-center justify-center"><svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6.5L9.4 17 4 11.7"/></svg></span></td>
+                          <td class="px-2 py-2.5 text-center"><span class="inline-flex h-5 w-5 rounded-full bg-emerald-500/14 text-emerald-600 dark:text-emerald-300 items-center justify-center"><svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6.5L9.4 17 4 11.7"/></svg></span></td>
+                          <td class="px-2 py-2.5 text-center"><span class="inline-flex h-5 w-5 rounded-full bg-emerald-500/14 text-emerald-600 dark:text-emerald-300 items-center justify-center"><svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6.5L9.4 17 4 11.7"/></svg></span></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <div class="mt-4 rounded-xl border border-ink-100 dark:border-white/10 p-3.5">
+                    <div class="flex items-center justify-between">
+                      <div class="text-[11px] font-semibold">Audit events (24h)</div>
+                      <div class="text-[11px] font-mono text-ink-500 dark:text-ink-400">1,284</div>
+                    </div>
+                    <div class="mt-2.5 flex items-end gap-1 h-12">
+                      <div class="flex-1 rounded-t bg-brand-500/70 bar" style="height:40%"></div>
+                      <div class="flex-1 rounded-t bg-brand-500/70 bar" style="height:62%;transition-delay:.05s"></div>
+                      <div class="flex-1 rounded-t bg-brand-500/70 bar" style="height:52%;transition-delay:.1s"></div>
+                      <div class="flex-1 rounded-t bg-accent-500/80 bar" style="height:86%;transition-delay:.15s"></div>
+                      <div class="flex-1 rounded-t bg-brand-500/70 bar" style="height:58%;transition-delay:.2s"></div>
+                      <div class="flex-1 rounded-t bg-brand-500/70 bar" style="height:72%;transition-delay:.25s"></div>
+                      <div class="flex-1 rounded-t bg-brand-500/70 bar" style="height:44%;transition-delay:.3s"></div>
+                      <div class="flex-1 rounded-t bg-brand-500/70 bar" style="height:66%;transition-delay:.35s"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= ANALYTICS (dark band) ================= -->
+<section id="analytics" class="relative py-20 sm:py-28 scroll-mt-24 bg-ink-950 text-white overflow-hidden">
+  <div class="absolute inset-0 opacity-[.55] pointer-events-none">
+    <div class="absolute -top-24 right-[-10%] h-[560px] w-[560px] rounded-full blur-[90px]" style="background:radial-gradient(circle,rgba(99,102,241,.45),transparent 68%)"></div>
+    <div class="absolute bottom-[-15%] left-[-8%] h-[520px] w-[520px] rounded-full blur-[95px]" style="background:radial-gradient(circle,rgba(124,77,251,.32),transparent 68%)"></div>
+    <div class="absolute inset-0 noise opacity-[.035]"></div>
+  </div>
+
+  <div class="relative mx-auto max-w-7xl px-5 sm:px-8">
+    <div class="max-w-3xl">
+      <div class="reveal inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-brand-300">
+        <span class="h-px w-8 bg-brand-400/70"></span> Learning analytics
+      </div>
+      <h2 class="reveal mt-5 font-display text-[clamp(2.1rem,5vw,3.55rem)] font-extrabold leading-[1.08] tracking-[-0.032em]">
+        Numbers that change <span class="text-brand-300">what you do next</span>
+      </h2>
+      <p class="reveal mt-5 text-[17px] sm:text-[18.5px] leading-relaxed text-white/68">
+        Every chart drills down to the submissions behind it. Filter by section, outcome, modality or
+        assessment type — and export accreditation-ready evidence in one click.
+      </p>
+    </div>
+
+    <div class="mt-12 grid grid-cols-1 lg:grid-cols-3 gap-5">
+
+      <!-- Line chart -->
+      <div class="reveal-scale lg:col-span-2 rounded-[24px] border border-white/10 bg-white/[.045] backdrop-blur-sm p-6 sm:p-8">
+        <div class="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <h3 class="font-display text-[19px] font-bold">Feedback turnaround vs. mastery growth</h3>
+            <p class="mt-1.5 text-[13.5px] text-white/55">Rolling 12-week view across all active sections</p>
+          </div>
+          <div class="flex items-center gap-4 text-[11.5px]">
+            <span class="flex items-center gap-2"><span class="h-2.5 w-2.5 rounded-full bg-brand-400"></span>Turnaround</span>
+            <span class="flex items-center gap-2"><span class="h-2.5 w-2.5 rounded-full bg-mint"></span>Mastery</span>
+          </div>
+        </div>
+
+        <div class="mt-7">
+          <svg viewBox="0 0 720 250" class="w-full h-auto" preserveAspectRatio="none" aria-label="Line chart">
+            <defs>
+              <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#7c86fb" stop-opacity=".38"/>
+                <stop offset="100%" stop-color="#7c86fb" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <!-- grid -->
+            <g stroke="rgba(255,255,255,.09)" stroke-width="1">
+              <line x1="0" y1="30" x2="720" y2="30"/><line x1="0" y1="80" x2="720" y2="80"/>
+              <line x1="0" y1="130" x2="720" y2="130"/><line x1="0" y1="180" x2="720" y2="180"/>
+              <line x1="0" y1="228" x2="720" y2="228"/>
+            </g>
+            <!-- area -->
+            <path d="M20,190 C90,170 130,150 190,152 C255,155 285,110 350,100 C415,90 450,120 515,84 C580,50 640,44 700,34 L700,228 L20,228 Z" fill="url(#areaGrad)" opacity="0" class="dot-pop" style="transition-duration:1.2s"/>
+            <!-- line 1 -->
+            <path d="M20,190 C90,170 130,150 190,152 C255,155 285,110 350,100 C415,90 450,120 515,84 C580,50 640,44 700,34"
+                  fill="none" stroke="#7d86fb" stroke-width="3" stroke-linecap="round" class="draw"/>
+            <!-- line 2 -->
+            <path d="M20,214 C95,206 135,192 195,182 C258,172 300,178 355,158 C412,138 455,148 518,126 C582,104 645,92 700,72"
+                  fill="none" stroke="#12b981" stroke-width="3" stroke-linecap="round" stroke-dasharray="1400" stroke-dashoffset="1400" class="draw" style="transition-delay:.35s"/>
+            <!-- dots -->
+            <g class="dot-pop" style="transition-delay:.9s">
+              <circle cx="350" cy="100" r="5.5" fill="#0c0f1e" stroke="#7d86fb" stroke-width="3"/>
+              <circle cx="515" cy="84" r="5.5" fill="#0c0f1e" stroke="#7d86fb" stroke-width="3"/>
+              <circle cx="700" cy="34" r="5.5" fill="#0c0f1e" stroke="#7d86fb" stroke-width="3"/>
+            </g>
+          </svg>
+        </div>
+
+        <div class="mt-5 grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div class="rounded-xl border border-white/10 bg-white/[.04] p-3.5">
+            <div class="text-[10px] uppercase tracking-wider text-white/50 font-semibold">Avg turnaround</div>
+            <div class="mt-1.5 font-display text-[19px] font-extrabold">1.8d</div>
+          </div>
+          <div class="rounded-xl border border-white/10 bg-white/[.04] p-3.5">
+            <div class="text-[10px] uppercase tracking-wider text-white/50 font-semibold">Mastery Δ</div>
+            <div class="mt-1.5 font-display text-[19px] font-extrabold text-mint">+12.4%</div>
+          </div>
+          <div class="rounded-xl border border-white/10 bg-white/[.04] p-3.5">
+            <div class="text-[10px] uppercase tracking-wider text-white/50 font-semibold">Feedback opens</div>
+            <div class="mt-1.5 font-display text-[19px] font-extrabold">87.3%</div>
+          </div>
+          <div class="rounded-xl border border-white/10 bg-white/[.04] p-3.5">
+            <div class="text-[10px] uppercase tracking-wider text-white/50 font-semibold">Resubmissions</div>
+            <div class="mt-1.5 font-display text-[19px] font-extrabold">2,140</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Radial + bars -->
+      <div class="space-y-5">
+        <div class="reveal-scale rounded-[24px] border border-white/10 bg-white/[.045] backdrop-blur-sm p-7">
+          <h3 class="font-display text-[18px] font-bold">Outcome attainment</h3>
+          <div class="mt-6 flex items-center gap-6">
+            <div class="relative h-[128px] w-[128px] shrink-0">
+              <svg viewBox="0 0 120 120" class="h-full w-full -rotate-90">
+                <circle cx="60" cy="60" r="50" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="11"/>
+                <circle cx="60" cy="60" r="50" fill="none" stroke="url(#gRad2)" stroke-width="11" stroke-linecap="round"
+                        stroke-dasharray="314" stroke-dashoffset="314" class="draw" style="transition-duration:1.7s"/>
+                <defs>
+                  <linearGradient id="gRad2" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#7d86fb"/><stop offset="100%" stop-color="#12b981"/>
+                  </linearGradient>
+                </defs>
+              </svg>
+              <div class="absolute inset-0 grid place-items-center">
+                <div class="text-center">
+                  <div class="font-display text-[27px] font-extrabold leading-none counter" data-count="86" data-suffix="%">0</div>
+                  <div class="text-[10px] text-white/55 mt-1">attained</div>
+                </div>
+              </div>
+            </div>
+            <div class="flex-1 space-y-3">
+              <div>
+                <div class="flex justify-between text-[11px] text-white/70"><span>Knowledge</span><span>91%</span></div>
+                <div class="mt-1.5 h-1.5 rounded-full bg-white/10 overflow-hidden"><div class="h-full rounded-full bg-brand-400 grow-x" style="width:91%"></div></div>
+              </div>
+              <div>
+                <div class="flex justify-between text-[11px] text-white/70"><span>Application</span><span>83%</span></div>
+                <div class="mt-1.5 h-1.5 rounded-full bg-white/10 overflow-hidden"><div class="h-full rounded-full bg-accent-400 grow-x" style="width:83%;transition-delay:.12s"></div></div>
+              </div>
+              <div>
+                <div class="flex justify-between text-[11px] text-white/70"><span>Communication</span><span>78%</span></div>
+                <div class="mt-1.5 h-1.5 rounded-full bg-white/10 overflow-hidden"><div class="h-full rounded-full bg-mint grow-x" style="width:78%;transition-delay:.24s"></div></div>
+              </div>
+              <div>
+                <div class="flex justify-between text-[11px] text-white/70"><span>Teamwork</span><span>88%</span></div>
+                <div class="mt-1.5 h-1.5 rounded-full bg-white/10 overflow-hidden"><div class="h-full rounded-full bg-amber2 grow-x" style="width:88%;transition-delay:.36s"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="reveal-scale rounded-[24px] border border-white/10 bg-gradient-to-br from-brand-600/28 to-accent-600/18 backdrop-blur-sm p-7" data-delay="140">
+          <div class="flex items-start justify-between">
+            <div>
+              <h3 class="font-display text-[18px] font-bold">At-risk learners</h3>
+              <p class="mt-1 text-[12.5px] text-white/62">Flagged early by the risk model</p>
+            </div>
+            <div class="h-10 w-10 rounded-2xl bg-white/12 border border-white/15 grid place-items-center">
+              <svg class="h-5 w-5 text-amber-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 4.6l8.4 14.2H3.6z"/><path d="M12 10.2v3.6M12 16.6h.01"/></svg>
+            </div>
+          </div>
+          <div class="mt-5 flex items-end gap-2.5">
+            <div class="flex-1 text-center">
+              <div class="font-display text-[30px] font-extrabold leading-none counter" data-count="34">0</div>
+              <div class="mt-1.5 text-[10.5px] text-white/55">High risk</div>
+              <div class="mt-2.5 h-1.5 rounded-full bg-rose-400/80 grow-x"></div>
+            </div>
+            <div class="flex-1 text-center">
+              <div class="font-display text-[30px] font-extrabold leading-none counter" data-count="76">0</div>
+              <div class="mt-1.5 text-[10.5px] text-white/55">Medium</div>
+              <div class="mt-2.5 h-1.5 rounded-full bg-amber-300/85 grow-x" style="transition-delay:.12s"></div>
+            </div>
+            <div class="flex-1 text-center">
+              <div class="font-display text-[30px] font-extrabold leading-none counter" data-count="212">0</div>
+              <div class="mt-1.5 text-[10.5px] text-white/55">Recovered</div>
+              <div class="mt-2.5 h-1.5 rounded-full bg-mint/85 grow-x" style="transition-delay:.24s"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ================= AI ENGINE ================= -->
+<section id="ai" class="relative py-20 sm:py-28 scroll-mt-24 overflow-hidden">
+  <div class="mx-auto max-w-7xl px-5 sm:px-8">
+    <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+
+      <div>
+        <div class="reveal inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-accent-600 dark:text-accent-300">
+          <span class="h-px w-8 bg-accent-500/70"></span> Mock AI engine
+        </div>
+        <h2 class="reveal mt-5 font-display text-[clamp(2.1rem,5vw,3.55rem)] font-extrabold leading-[1.08] tracking-[-0.032em]">
+          Prototype the intelligence <br class="hidden sm:block">before you wire the models
+        </h2>
+        <p class="reveal mt-5 text-[17px] sm:text-[18.5px] leading-relaxed text-ink-600 dark:text-ink-300">
+          LearnLens ships with a deterministic mock AI service that mirrors the real contract —
+          embeddings, rubric scoring, similarity, sentiment and skill tagging — so your team can build
+          the entire product experience today and swap in production models later.
+        </p>
+
+        <!-- pipeline -->
+        <div class="mt-9 grid sm:grid-cols-2 gap-4">
+          <div class="reveal sweep rounded-2xl border border-ink-200/70 dark:border-white/10 bg-white dark:bg-white/[.045] p-5">
+            <div class="flex items-center gap-3">
+              <div class="h-9 w-9 rounded-xl bg-brand-500/12 text-brand-600 dark:text-brand-300 grid place-items-center font-mono text-[12px] font-bold">01</div>
+              <div class="text-[14px] font-semibold">Ingest &amp; normalise</div>
+            </div>
+            <p class="mt-3 text-[13.5px] leading-relaxed text-ink-600 dark:text-ink-400">Chunking, OCR, code parsing and audio transcription into a unified evidence graph.</p>
+          </div>
+          <div class="reveal sweep rounded-2xl border border-ink-200/70 dark:border-white/10 bg-white dark:bg-white/[.045] p-5" data-delay="110">
+            <div class="flex items-center gap-3">
+              <div class="h-9 w-9 rounded-xl bg-accent-500/12 text-accent-600 dark:text-accent-300 grid place-items-center font-mono text-[12px] font-bold">02</div>
+              <div class="text-[14px] font-semibold">Score against rubric</div>
+            </div>
+            <p class="mt-3 text-[13.5px] leading-relaxed text-ink-600 dark:text-ink-400">Criterion-level scoring with confidence bands and highlighted supporting passages.</p>
+          </div>
+          <div class="reveal sweep rounded-2xl border border-ink-200/70 dark:border-white/10 bg-white dark:bg-white/[.045] p-5" data-delay="220">
+            <div class="flex items-center gap-3">
+              <div class="h-9 w-9 rounded-xl bg-emerald-500/12 text-emerald-600 dark:text-emerald-300 grid place-items-center font-mono text-[12px] font-bold">03</div>
+              <div class="text-[14px] font-semibold">Draft feedback</div>
+            </div>
+            <p class="mt-3 text-[13.5px] leading-relaxed text-ink-600 dark:text-ink-400">Tone-controlled comments mapped to strengths, gaps and next-step resources.</p>
+          </div>
+          <div class="reveal sweep rounded-2xl border border-ink-200/70 dark:border-white/10 bg-white dark:bg-white/[.045] p-5" data-delay="330">
+            <div class="flex items-center gap-3">
+              <div class="h-9 w-9 rounded-xl bg-amber-500/12 text-amber-600 dark:text-amber-300 grid place-items-center font-mono text-[12px] font-bold">04</div>
+              <div class="text-[14px] font-semibold">Signal &amp; explain</div>
+            </div>
+            <p class="mt-3 text-[13.5px] leading-relaxed text-ink-600 dark:text-ink-400">Similarity, sentiment, skill tags and risk indicators — each traceable to source.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- interactive demo -->
+      <div class="reveal-scale">
+        <div class="relative rounded-[28px] border border-ink-200/70 dark:border-white/10 bg-ink-950 text-white shadow-lift overflow-hidden">
+          <div class="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-brand-400 to-transparent"></div>
+          <div class="px-6 py-5 border-b border-white/8 flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <div class="h-8 w-8 rounded-xl bg-gradient-to-br from-brand-500 to-accent-600 grid place-items-center">
+                <svg class="h-4 w-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3.5l1.8 4.6 4.6 1.8-4.6 1.8L12 16.3l-1.8-4.6-4.6-1.8 4.6-1.8z"/></svg>
+              </div>
+              <div>
+                <div class="text-[12.5px] font-semibold leading-none">AI Analysis Sandbox</div>
+                <div class="text-[10.5px] text-white/50 mt-1 font-mono">mock-service · deterministic</div>
+              </div>
+            </div>
+            <span id="aiStatusBadge" class="text-[10.5px] font-semibold px-2.5 py-1 rounded-full bg-white/10 border border-white/12">Idle</span>
+          </div>
+
+          <div class="p-6">
+            <!-- file row -->
+            <div class="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[.05] p-3.5">
+              <div class="h-10 w-10 rounded-xl bg-accent-500/22 text-accent-200 grid place-items-center">
+                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 3.5h7l5 5v11a1.5 1.5 0 0 1-1.5 1.5h-10A1.5 1.5 0 0 1 5 19.5v-14A1.5 1.5 0 0 1 6.5 3.5z"/><path d="M13 3.5v5h5"/></svg>
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="text-[12.5px] font-medium truncate">milestone2_ast_report.pdf</div>
+                <div class="text-[10.5px] text-white/50">2.4 MB · 18 pages · code + diagrams</div>
+              </div>
+              <div class="text-[10.5px] text-mint font-semibold">Ready</div>
+            </div>
+
+            <!-- progress -->
+            <div class="mt-5">
+              <div class="flex items-center justify-between text-[11px] text-white/60">
+                <span id="aiStage">Awaiting analysis</span>
+                <span id="aiPercent" class="font-mono">0%</span>
+              </div>
+              <div class="mt-2 h-2 rounded-full bg-white/10 overflow-hidden">
+                <div id="aiBar" class="h-full rounded-full bg-gradient-to-r from-brand-400 via-accent-400 to-mint transition-[width] duration-500 ease-out" style="width:0%"></div>
+              </div>
+            </div>
+
+            <!-- results -->
+            <div id="aiResults" class="mt-6 space-y-3 opacity-45 transition-opacity duration-700">
+              <div class="ai-row rounded-2xl border border-white/10 bg-white/[.045] p-4">
+                <div class="flex items-center justify-between">
+                  <div class="text-[12px] font-semibold">Rubric alignment</div>
+                  <div class="text-[12px] font-mono text-brand-300">92 / 100</div>
+                </div>
+                <div class="mt-2.5 h-1.5 rounded-full bg-white/10 overflow-hidden">
+                  <div class="ai-fill h-full rounded-full bg-gradient-to-r from-brand-400 to-accent-400 transition-[width] duration-900" data-w="92%" style="width:0%"></div>
+                </div>
+              </div>
+              <div class="ai-row rounded-2xl border border-white/10 bg-white/[.045] p-4">
+                <div class="flex items-center justify-between">
+                  <div class="text-[12px] font-semibold">Originality / similarity</div>
+                  <div class="text-[12px] font-mono text-mint">2% match</div>
+                </div>
+                <div class="mt-2.5 h-1.5 rounded-full bg-white/10 overflow-hidden">
+                  <div class="ai-fill h-full rounded-full bg-mint transition-[width] duration-900" data-w="12%" style="width:0%"></div>
+                </div>
+              </div>
+              <div class="ai-row rounded-2xl border border-white/10 bg-white/[.045] p-4">
+                <div class="flex items-center justify-between">
+                  <div class="text-[12px] font-semibold">Sentiment &amp; confidence</div>
+                  <div class="text-[12px] font-mono text-amber-200">Positive · 0.87</div>
+                </div>
+                <div class="mt-2.5 h-1.5 rounded-full bg-white/10 overflow-hidden">
+                  <div class="ai-fill h-full rounded-full bg-amber-300 transition-[width] duration-900" data-w="87%" style="width:0%"></div>
+                </div>
+              </div>
+              <div class="ai-row rounded-2xl border border-white/10 bg-white/[.045] p-4">
+                <div class="flex items-center justify-between text-[12px]">
+                  <div class="font-semibold">Detected skills</div>
+                  <div class="flex flex-wrap gap-1.5 justify-end max-w-[220px]">
+                    <span class="px-2 py-1 rounded-full bg-white/10 border border-white/12 text-[10px]">Parsers</span>
+                    <span class="px-2 py-1 rounded-full bg-white/10 border border-white/12 text-[10px]">Complexity</span>
+                    <span class="px-2 py-1 rounded-full bg-white/10 border border-white/12 text-[10px]">Testing</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <button id="runAiBtn" class="magnetic mt-6 w-full h-12 rounded-2xl bg-gradient-to-r from-brand-500 to-accent-600 text-white font-semibold text-[14px] hover:shadow-glow transition-shadow">
+              Run mock analysis
+            </button>
+            <p class="mt-3 text-[10.5px] text-white/45 text-center leading-relaxed">
+              Deterministic demo output — no student data leaves your browser.
+            </p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ================= SECURITY / DATABASE ================= -->
+<section id="security" class="relative py-20 sm:py-28 scroll-mt-24 bg-ink-50/70 dark:bg-white/[.022] border-y border-ink-100 dark:border-white/8">
+  <div class="mx-auto max-w-7xl px-5 sm:px-8">
+    <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+
+      <!-- schema visual -->
+      <div class="reveal-scale order-2 lg:order-1">
+        <div class="rounded-[28px] border border-ink-200/70 dark:border-white/10 bg-white dark:bg-white/[.045] shadow-lift overflow-hidden">
+          <div class="px-6 py-4 border-b border-ink-100 dark:border-white/8 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="h-2.5 w-2.5 rounded-full bg-rose-400/80"></span>
+              <span class="h-2.5 w-2.5 rounded-full bg-amber-400/80"></span>
+              <span class="h-2.5 w-2.5 rounded-full bg-mint/80"></span>
+            </div>
+            <div class="text-[11px] font-mono text-ink-500 dark:text-ink-400">supabase / schema.sql</div>
+          </div>
+
+          <div class="p-6 space-y-3">
+            <div class="sweep rounded-2xl border border-ink-100 dark:border-white/10 p-4 hover:border-brand-300 dark:hover:border-brand-500/40 transition-colors">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                  <div class="h-8 w-8 rounded-lg bg-brand-500/12 text-brand-600 dark:text-brand-300 grid place-items-center">
+                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><ellipse cx="12" cy="6" rx="7.2" ry="3"/><path d="M4.8 6v12c0 1.7 3.2 3 7.2 3s7.2-1.3 7.2-3V6"/><path d="M4.8 12c0 1.7 3.2 3 7.2 3s7.2-1.3 7.2-3"/></svg>
+                  </div>
+                  <div>
+                    <div class="text-[13px] font-semibold font-mono">profiles</div>
+                    <div class="text-[10.5px] text-ink-500 dark:text-ink-400">users · roles · departments</div>
+                  </div>
+                </div>
+                <span class="text-[10px] font-semibold px-2 py-1 rounded-full bg-emerald-500/12 text-emerald-600 dark:text-emerald-300">RLS on</span>
+              </div>
+            </div>
+
+            <div class="sweep rounded-2xl border border-ink-100 dark:border-white/10 p-4 hover:border-brand-300 dark:hover:border-brand-500/40 transition-colors">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                  <div class="h-8 w-8 rounded-lg bg-accent-500/12 text-accent-600 dark:text-accent-300 grid place-items-center">
+                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3.6" y="4.6" width="16.8" height="14.8" rx="2.6"/><path d="M7.6 9.4h8.8M7.6 13h5.4"/></svg>
+                  </div>
+                  <div>
+                    <div class="text-[13px] font-semibold font-mono">assignments</div>
+                    <div class="text-[10.5px] text-ink-500 dark:text-ink-400">rubrics · deadlines · sections</div>
+                  </div>
+                </div>
+                <span class="text-[10px] font-semibold px-2 py-1 rounded-full bg-emerald-500/12 text-emerald-600 dark:text-emerald-300">RLS on</span>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div class="sweep rounded-2xl border border-ink-100 dark:border-white/10 p-4">
+                <div class="text-[12px] font-semibold font-mono">submissions</div>
+                <div class="mt-1.5 text-[10.5px] text-ink-500 dark:text-ink-400 leading-relaxed">files · modality · timestamps</div>
+                <div class="mt-3 inline-flex text-[9.5px] font-semibold px-2 py-1 rounded-full bg-brand-500/12 text-brand-700 dark:text-brand-200">owner-scoped</div>
+              </div>
+              <div class="sweep rounded-2xl border border-ink-100 dark:border-white/10 p-4">
+                <div class="text-[12px] font-semibold font-mono">evaluations</div>
+                <div class="mt-1.5 text-[10.5px] text-ink-500 dark:text-ink-400 leading-relaxed">scores · feedback · versions</div>
+                <div class="mt-3 inline-flex text-[9.5px] font-semibold px-2 py-1 rounded-full bg-accent-500/12 text-accent-700 dark:text-accent-200">faculty + ai</div>
+              </div>
+              <div class="sweep rounded-2xl border border-ink-100 dark:border-white/10 p-4">
+                <div class="text-[12px] font-semibold font-mono">peer_reviews</div>
+                <div class="mt-1.5 text-[10.5px] text-ink-500 dark:text-ink-400 leading-relaxed">blind pairs · appeals</div>
+                <div class="mt-3 inline-flex text-[9.5px] font-semibold px-2 py-1 rounded-full bg-emerald-500/12 text-emerald-700 dark:text-emerald-200">moderated</div>
+              </div>
+              <div class="sweep rounded-2xl border border-ink-100 dark:border-white/10 p-4">
+                <div class="text-[12px] font-semibold font-mono">audit_log</div>
+                <div class="mt-1.5 text-[10.5px] text-ink-500 dark:text-ink-400 leading-relaxed">actor · action · scope</div>
+                <div class="mt-3 inline-flex text-[9.5px] font-semibold px-2 py-1 rounded-full bg-amber-500/12 text-amber-700 dark:text-amber-200">append-only</div>
+              </div>
+            </div>
+
+            <div class="rounded-2xl bg-ink-950 dark:bg-black/35 p-4 font-mono text-[10.5px] leading-relaxed overflow-x-auto">
+              <div class="text-white/45"><span class="text-accent-300">create policy</span> <span class="text-white/80">"students_read_own"</span></div>
+              <div class="text-white/45">&nbsp;&nbsp;<span class="text-accent-300">on</span> submissions <span class="text-accent-300">for select</span></div>
+              <div class="text-white/45">&nbsp;&nbsp;<span class="text-accent-300">using</span> ( auth.<span class="text-emerald-300">uid</span>() = student_id</div>
+              <div class="text-white/45">&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-accent-300">or</span> <span class="text-emerald-300">has_role</span>(<span class="text-amber-200">'faculty'</span>) );</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- copy -->
+      <div class="order-1 lg:order-2">
+        <div class="reveal inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-brand-600 dark:text-brand-300">
+          <span class="h-px w-8 bg-brand-500/70"></span> Data &amp; security
+        </div>
+        <h2 class="reveal mt-5 font-display text-[clamp(2.1rem,5vw,3.55rem)] font-extrabold leading-[1.08] tracking-[-0.032em]">
+          Row-level security, <br class="hidden sm:block">by design
+        </h2>
+        <p class="reveal mt-5 text-[17px] sm:text-[18.5px] leading-relaxed text-ink-600 dark:text-ink-300">
+          Built on Supabase with PostgreSQL row-level security enforcing every read and write.
+          Students see only their work. Faculty see only their sections. Coordinators see program
+          scope. Admins govern — and every access event is logged.
+        </p>
+
+        <div class="mt-8 grid sm:grid-cols-2 gap-4">
+          <div class="reveal rounded-2xl border border-ink-200/70 dark:border-white/10 bg-white dark:bg-white/[.045] p-5">
+            <div class="h-10 w-10 rounded-xl bg-brand-500/12 text-brand-600 dark:text-brand-300 grid place-items-center">
+              <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="4.4" y="10.2" width="15.2" height="10" rx="2.4"/><path d="M8 10.2V7.6a4 4 0 1 1 8 0v2.6"/></svg>
+            </div>
+            <h3 class="mt-4 text-[15px] font-semibold">Encrypted at rest &amp; transit</h3>
+            <p class="mt-2 text-[13.5px] leading-relaxed text-ink-600 dark:text-ink-400">TLS 1.3, AES-256 storage and scoped signed URLs for every file access.</p>
+          </div>
+          <div class="reveal rounded-2xl border border-ink-200/70 dark:border-white/10 bg-white dark:bg-white/[.045] p-5" data-delay="110">
+            <div class="h-10 w-10 rounded-xl bg-accent-500/12 text-accent-600 dark:text-accent-300 grid place-items-center">
+              <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="8.2"/><path d="M12 7.6v4.8l3.2 2"/></svg>
+            </div>
+            <h3 class="mt-4 text-[15px] font-semibold">Full audit history</h3>
+            <p class="mt-2 text-[13.5px] leading-relaxed text-ink-600 dark:text-ink-400">Immutable append-only log with retention policies and export controls.</p>
+          </div>
+          <div class="reveal rounded-2xl border border-ink-200/70 dark:border-white/10 bg-white dark:bg-white/[.045] p-5" data-delay="220">
+            <div class="h-10 w-10 rounded-xl bg-emerald-500/12 text-emerald-600 dark:text-emerald-300 grid place-items-center">
+              <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 3l7.2 3.2v5c0 4.5-3 8.3-7.2 9.6-4.2-1.3-7.2-5.1-7.2-9.6v-5z"/><path d="M9.2 12.1l2 2 3.6-4"/></svg>
+            </div>
+            <h3 class="mt-4 text-[15px] font-semibold">FERPA &amp; GDPR aligned</h3>
+            <p class="mt-2 text-[13.5px] leading-relaxed text-ink-600 dark:text-ink-400">Consent records, data export and right-to-erasure workflows included.</p>
+          </div>
+          <div class="reveal rounded-2xl border border-ink-200/70 dark:border-white/10 bg-white dark:bg-white/[.045] p-5" data-delay="330">
+            <div class="h-10 w-10 rounded-xl bg-amber-500/12 text-amber-600 dark:text-amber-300 grid place-items-center">
+              <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7.2l8-3.6 8 3.6v4.4c0 4.6-3.2 8.3-8 9.8-4.8-1.5-8-5.2-8-9.8z"/><path d="M12 9v3.4"/></svg>
+            </div>
+            <h3 class="mt-4 text-[15px] font-semibold">SSO &amp; directory sync</h3>
+            <p class="mt-2 text-[13.5px] leading-relaxed text-ink-600 dark:text-ink-400">SAML/OIDC, SCIM provisioning and role mapping from your student information system.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ================= WORKFLOW TIMELINE ================= -->
+<section class="relative py-20 sm:py-28">
+  <div class="mx-auto max-w-7xl px-5 sm:px-8">
+    <div class="max-w-2xl">
+      <div class="reveal inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-brand-600 dark:text-brand-300">
+        <span class="h-px w-8 bg-brand-500/70"></span> Implementation path
+      </div>
+      <h2 class="reveal mt-5 font-display text-[clamp(2.1rem,5vw,3.55rem)] font-extrabold leading-[1.08] tracking-[-0.032em]">
+        From landing page to <span class="text-brand-600 dark:text-brand-300">full deployment</span>
+      </h2>
+      <p class="reveal mt-5 text-[17px] leading-relaxed text-ink-600 dark:text-ink-300">
+        A staged rollout designed so each milestone ships something your users can feel.
+      </p>
+    </div>
+
+    <!-- timeline -->
+    <div class="relative mt-14">
+      <!-- animated rail -->
+      <div class="hidden lg:block absolute left-0 right-0 top-[26px] h-[2px] bg-ink-100 dark:bg-white/10">
+        <div id="timelineProgress" class="h-full w-0 bg-gradient-to-r from-brand-500 via-accent-500 to-mint transition-[width] duration-500 ease-out"></div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-x-6 gap-y-10">
+        <div class="reveal relative">
+          <div class="flex items-center gap-3">
+            <div class="relative h-[52px] w-[52px] rounded-2xl bg-white dark:bg-white/[.06] border border-ink-200 dark:border-white/12 grid place-items-center shadow-soft">
+              <span class="font-display text-[17px] font-extrabold text-brand-600 dark:text-brand-300">01</span>
+              <span class="absolute -right-1 -top-1 h-3.5 w-3.5 rounded-full bg-brand-500 ring-4 ring-white dark:ring-ink-950"></span>
+            </div>
+          </div>
+          <h3 class="mt-5 text-[17px] font-semibold">Access &amp; onboarding</h3>
+          <p class="mt-2.5 text-[14px] leading-relaxed text-ink-600 dark:text-ink-400">Landing page, email auth, role selection and guided workspace setup.</p>
+        </div>
+
+        <div class="reveal relative" data-delay="110">
+          <div class="flex items-center gap-3">
+            <div class="relative h-[52px] w-[52px] rounded-2xl bg-white dark:bg-white/[.06] border border-ink-200 dark:border-white/12 grid place-items-center shadow-soft">
+              <span class="font-display text-[17px] font-extrabold text-accent-600 dark:text-accent-300">02</span>
+              <span class="absolute -right-1 -top-1 h-3.5 w-3.5 rounded-full bg-accent-500 ring-4 ring-white dark:ring-ink-950"></span>
+            </div>
+          </div>
+          <h3 class="mt-5 text-[17px] font-semibold">Data foundation</h3>
+          <p class="mt-2.5 text-[14px] leading-relaxed text-ink-600 dark:text-ink-400">Supabase schema, migrations, storage buckets and role-scoped RLS policies.</p>
+        </div>
+
+        <div class="reveal relative" data-delay="220">
+          <div class="flex items-center gap-3">
+            <div class="relative h-[52px] w-[52px] rounded-2xl bg-white dark:bg-white/[.06] border border-ink-200 dark:border-white/12 grid place-items-center shadow-soft">
+              <span class="font-display text-[17px] font-extrabold text-emerald-600 dark:text-emerald-300">03</span>
+              <span class="absolute -right-1 -top-1 h-3.5 w-3.5 rounded-full bg-mint ring-4 ring-white dark:ring-ink-950"></span>
+            </div>
+          </div>
+          <h3 class="mt-5 text-[17px] font-semibold">Teaching workflows</h3>
+          <p class="mt-2.5 text-[14px] leading-relaxed text-ink-600 dark:text-ink-400">Assignment authoring, submissions, evaluation, feedback and peer review.</p>
+        </div>
+
+        <div class="reveal relative" data-delay="330">
+          <div class="flex items-center gap-3">
+            <div class="relative h-[52px] w-[52px] rounded-2xl bg-white dark:bg-white/[.06] border border-ink-200 dark:border-white/12 grid place-items-center shadow-soft">
+              <span class="font-display text-[17px] font-extrabold text-amber-600 dark:text-amber-300">04</span>
+              <span class="absolute -right-1 -top-1 h-3.5 w-3.5 rounded-full bg-amber-500 ring-4 ring-white dark:ring-ink-950"></span>
+            </div>
+          </div>
+          <h3 class="mt-5 text-[17px] font-semibold">Intelligence layer</h3>
+          <p class="mt-2.5 text-[14px] leading-relaxed text-ink-600 dark:text-ink-400">Mock AI analysis, dashboards for students, mentors &amp; coordinators.</p>
+        </div>
+
+        <div class="reveal relative" data-delay="440">
+          <div class="flex items-center gap-3">
+            <div class="relative h-[52px] w-[52px] rounded-2xl bg-white dark:bg-white/[.06] border border-ink-200 dark:border-white/12 grid place-items-center shadow-soft">
+              <span class="font-display text-[17px] font-extrabold text-ink-700 dark:text-ink-200">05</span>
+              <span class="absolute -right-1 -top-1 h-3.5 w-3.5 rounded-full bg-ink-500 ring-4 ring-white dark:ring-ink-950"></span>
+            </div>
+          </div>
+          <h3 class="mt-5 text-[17px] font-semibold">Polish &amp; govern</h3>
+          <p class="mt-2.5 text-[14px] leading-relaxed text-ink-600 dark:text-ink-400">Notifications, admin controls, accessibility, theming and performance passes.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= TESTIMONIALS ================= -->
+<section class="relative py-20 sm:py-28 bg-ink-50/70 dark:bg-white/[.022] border-y border-ink-100 dark:border-white/8">
+  <div class="mx-auto max-w-7xl px-5 sm:px-8">
+    <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8">
+      <div class="max-w-2xl">
+        <div class="reveal inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-brand-600 dark:text-brand-300">
+          <span class="h-px w-8 bg-brand-500/70"></span> In practice
+        </div>
+        <h2 class="reveal mt-5 font-display text-[clamp(2.05rem,4.8vw,3.35rem)] font-extrabold leading-[1.1] tracking-[-0.032em]">
+          Loved by the people who grade, mentor and lead
+        </h2>
+      </div>
+      <div class="reveal flex items-center gap-3">
+        <div class="flex -space-x-2">
+          <img class="h-11 w-11 rounded-full object-cover ring-2 ring-white dark:ring-ink-900" src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&w=120&q=80" alt="User" />
+          <img class="h-11 w-11 rounded-full object-cover ring-2 ring-white dark:ring-ink-900" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=120&q=80" alt="User" />
+          <img class="h-11 w-11 rounded-full object-cover ring-2 ring-white dark:ring-ink-900" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=120&q=80" alt="User" />
+        </div>
+        <div>
+          <div class="flex gap-0.5 text-amber-400">
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5l2.9 5.9 6.6.9-4.8 4.6 1.2 6.5L12 17.4 6.1 20.4l1.2-6.5-4.8-4.6 6.6-.9z"/></svg>
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5l2.9 5.9 6.6.9-4.8 4.6 1.2 6.5L12 17.4 6.1 20.4l1.2-6.5-4.8-4.6 6.6-.9z"/></svg>
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5l2.9 5.9 6.6.9-4.8 4.6 1.2 6.5L12 17.4 6.1 20.4l1.2-6.5-4.8-4.6 6.6-.9z"/></svg>
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5l2.9 5.9 6.6.9-4.8 4.6 1.2 6.5L12 17.4 6.1 20.4l1.2-6.5-4.8-4.6 6.6-.9z"/></svg>
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5l2.9 5.9 6.6.9-4.8 4.6 1.2 6.5L12 17.4 6.1 20.4l1.2-6.5-4.8-4.6 6.6-.9z"/></svg>
+          </div>
+          <div class="mt-1.5 text-[13px] text-ink-600 dark:text-ink-400"><strong class="text-ink-900 dark:text-white font-semibold">4.9 / 5</strong> from 860+ reviews</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-12 grid md:grid-cols-3 gap-6">
+
+      <div class="reveal-scale sweep rounded-[24px] border border-ink-200/70 dark:border-white/10 bg-white dark:bg-white/[.045] p-7 shadow-soft hover:shadow-lift transition-shadow duration-500">
+        <svg class="h-8 w-8 text-brand-300" viewBox="0 0 24 24" fill="currentColor"><path d="M9.6 5.4C6.2 7 4.2 10 4.2 13.7c0 3 1.8 4.9 4.2 4.9 2.1 0 3.8-1.6 3.8-3.8 0-2-1.4-3.5-3.3-3.5-.4 0-.9.1-1 .1.4-1.7 1.9-3.3 3.6-4.2zm9 0c-3.4 1.6-5.4 4.6-5.4 8.3 0 3 1.8 4.9 4.2 4.9 2.1 0 3.8-1.6 3.8-3.8 0-2-1.4-3.5-3.3-3.5-.4 0-.9.1-1 .1.4-1.7 1.9-3.3 3.6-4.2z"/></svg>
+        <p class="mt-5 text-[15.5px] leading-relaxed text-ink-700 dark:text-ink-200">
+          “We cut first-pass grading time by more than half without losing the nuance our accreditation
+          reviewers expect. The criterion-level evidence is the part that sold our faculty board.”
+        </p>
+        <div class="mt-7 flex items-center gap-3.5">
+          <img class="h-12 w-12 rounded-full object-cover" src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&w=160&q=80" alt="Dr. Priya Raman" />
+          <div>
+            <div class="text-[14px] font-semibold">Dr. Priya Raman</div>
+            <div class="text-[12px] text-ink-500 dark:text-ink-400">Head of Assessment, Northbridge University</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="reveal-scale sweep rounded-[24px] border border-ink-200/70 dark:border-white/10 bg-white dark:bg-white/[.045] p-7 shadow-soft hover:shadow-lift transition-shadow duration-500" data-delay="120">
+        <svg class="h-8 w-8 text-accent-300" viewBox="0 0 24 24" fill="currentColor"><path d="M9.6 5.4C6.2 7 4.2 10 4.2 13.7c0 3 1.8 4.9 4.2 4.9 2.1 0 3.8-1.6 3.8-3.8 0-2-1.4-3.5-3.3-3.5-.4 0-.9.1-1 .1.4-1.7 1.9-3.3 3.6-4.2zm9 0c-3.4 1.6-5.4 4.6-5.4 8.3 0 3 1.8 4.9 4.2 4.9 2.1 0 3.8-1.6 3.8-3.8 0-2-1.4-3.5-3.3-3.5-.4 0-.9.1-1 .1.4-1.7 1.9-3.3 3.6-4.2z"/></svg>
+        <p class="mt-5 text-[15.5px] leading-relaxed text-ink-700 dark:text-ink-200">
+          “The mentor dashboard changed how I run check-ins. I walk in knowing exactly which student is
+          drifting and why — and the mentees feel it.”
+        </p>
+        <div class="mt-7 flex items-center gap-3.5">
+          <img class="h-12 w-12 rounded-full object-cover" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=160&q=80" alt="Daniel Okafor" />
+          <div>
+            <div class="text-[14px] font-semibold">Daniel Okafor</div>
+            <div class="text-[12px] text-ink-500 dark:text-ink-400">Senior Mentor, Vantage Institute</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="reveal-scale sweep rounded-[24px] border border-ink-200/70 dark:border-white/10 bg-white dark:bg-white/[.045] p-7 shadow-soft hover:shadow-lift transition-shadow duration-500" data-delay="240">
+        <svg class="h-8 w-8 text-mint" viewBox="0 0 24 24" fill="currentColor"><path d="M9.6 5.4C6.2 7 4.2 10 4.2 13.7c0 3 1.8 4.9 4.2 4.9 2.1 0 3.8-1.6 3.8-3.8 0-2-1.4-3.5-3.3-3.5-.4 0-.9.1-1 .1.4-1.7 1.9-3.3 3.6-4.2zm9 0c-3.4 1.6-5.4 4.6-5.4 8.3 0 3 1.8 4.9 4.2 4.9 2.1 0 3.8-1.6 3.8-3.8 0-2-1.4-3.5-3.3-3.5-.4 0-.9.1-1 .1.4-1.7 1.9-3.3 3.6-4.2z"/></svg>
+        <p class="mt-5 text-[15.5px] leading-relaxed text-ink-700 dark:text-ink-200">
+          “Row-level security meant our data governance team approved rollout in three weeks instead of
+          three terms. The audit trail alone paid for the migration.”
+        </p>
+        <div class="mt-7 flex items-center gap-3.5">
+          <img class="h-12 w-12 rounded-full object-cover" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=160&q=80" alt="Laura Meunier" />
+          <div>
+            <div class="text-[14px] font-semibold">Laura Meunier</div>
+            <div class="text-[12px] text-ink-500 dark:text-ink-400">Program Coordinator, Polytechnic West</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ================= PRICING ================= -->
+<section id="pricing" class="relative py-20 sm:py-28 scroll-mt-24">
+  <div class="mx-auto max-w-7xl px-5 sm:px-8">
+    <div class="text-center max-w-2xl mx-auto">
+      <div class="reveal inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-brand-600 dark:text-brand-300">
+        <span class="h-px w-8 bg-brand-500/70"></span> Pricing
+      </div>
+      <h2 class="reveal mt-5 font-display text-[clamp(2.1rem,5vw,3.45rem)] font-extrabold leading-[1.1] tracking-[-0.032em]">
+        Plans that scale from one class to a whole institution
+      </h2>
+      <p class="reveal mt-5 text-[17px] leading-relaxed text-ink-600 dark:text-ink-300">
+        Start free with your first course. Upgrade when your program is ready.
+      </p>
+
+      <!-- billing toggle -->
+      <div class="reveal mt-8 inline-flex items-center gap-3 p-1.5 rounded-full border border-ink-200 dark:border-white/10 bg-ink-50 dark:bg-white/[.05]">
+        <button id="billMonthly" class="px-5 py-2.5 rounded-full text-[13.5px] font-semibold bg-white dark:bg-white/12 text-ink-900 dark:text-white shadow-soft transition-all">Monthly</button>
+        <button id="billYearly" class="px-5 py-2.5 rounded-full text-[13.5px] font-semibold text-ink-600 dark:text-ink-300 transition-all">
+          Yearly <span class="ml-1.5 text-[10.5px] font-bold px-2 py-0.5 rounded-full bg-mint/15 text-emerald-600 dark:text-emerald-300">-20%</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="mt-12 grid md:grid-cols-3 gap-6 items-stretch">
+
+      <div class="reveal rounded-[26px] border border-ink-200/70 dark:border-white/10 bg-white dark:bg-white/[.045] p-8 flex flex-col shadow-soft">
+        <div class="text-[13px] font-semibold uppercase tracking-[0.14em] text-ink-500 dark:text-ink-400">Classroom</div>
+        <div class="mt-5 flex items-end gap-2">
+          <div class="font-display text-[46px] font-extrabold leading-none">$0</div>
+          <div class="mb-1.5 text-[13px] text-ink-500 dark:text-ink-400">forever</div>
+        </div>
+        <p class="mt-4 text-[14.5px] leading-relaxed text-ink-600 dark:text-ink-400">
+          For individual educators exploring multimodal feedback with one course.
+        </p>
+        <ul class="mt-7 space-y-3 text-[14px] flex-1">
+          <li class="flex items-start gap-2.5"><svg class="mt-1 h-4 w-4 text-mint shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M20 6.5L9.4 17 4 11.7"/></svg><span>1 course · up to 40 students</span></li>
+          <li class="flex items-start gap-2.5"><svg class="mt-1 h-4 w-4 text-mint shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M20 6.5L9.4 17 4 11.7"/></svg><span>Assignment &amp; rubric builder</span></li>
+          <li class="flex items-start gap-2.5"><svg class="mt-1 h-4 w-4 text-mint shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M20 6.5L9.4 17 4 11.7"/></svg><span>Mock AI analysis (200 / month)</span></li>
+          <li class="flex items-start gap-2.5"><svg class="mt-1 h-4 w-4 text-mint shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M20 6.5L9.4 17 4 11.7"/></svg><span>Student &amp; faculty dashboards</span></li>
+        </ul>
+        <button data-open-auth="signup" class="mt-8 h-12 rounded-2xl border border-ink-200 dark:border-white/12 font-semibold text-[14.5px] hover:border-brand-400 hover:bg-brand-50/60 dark:hover:bg-white/5 transition-colors">
+          Start free
+        </button>
+      </div>
+
+      <div class="reveal-scale relative rounded-[26px] border-2 border-brand-500/70 bg-gradient-to-b from-brand-600 to-accent-700 text-white p-8 flex flex-col shadow-glow" data-delay="110">
+        <div class="absolute -top-3.5 left-1/2 -translate-x-1/2">
+          <span class="px-3.5 py-1.5 rounded-full bg-white text-brand-700 text-[11px] font-bold shadow-soft whitespace-nowrap">Most popular</span>
+        </div>
+        <div class="text-[13px] font-semibold uppercase tracking-[0.14em] text-white/72">Department</div>
+        <div class="mt-5 flex items-end gap-2">
+          <div class="font-display text-[46px] font-extrabold leading-none">
+            $<span class="price" data-monthly="12" data-yearly="10">12</span>
+          </div>
+          <div class="mb-1.5 text-[13px] text-white/70">per educator / month</div>
+        </div>
+        <p class="mt-4 text-[14.5px] leading-relaxed text-white/78">
+          Full peer review, mentor tooling and cohort analytics for growing programs.
+        </p>
+        <ul class="mt-7 space-y-3 text-[14px] flex-1">
+          <li class="flex items-start gap-2.5"><svg class="mt-1 h-4 w-4 text-white shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M20 6.5L9.4 17 4 11.7"/></svg><span>Unlimited courses &amp; sections</span></li>
+          <li class="flex items-start gap-2.5"><svg class="mt-1 h-4 w-4 text-white shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M20 6.5L9.4 17 4 11.7"/></svg><span>Peer review &amp; moderation workflows</span></li>
+          <li class="flex items-start gap-2.5"><svg class="mt-1 h-4 w-4 text-white shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M20 6.5L9.4 17 4 11.7"/></svg><span>Mentor &amp; coordinator dashboards</span></li>
+          <li class="flex items-start gap-2.5"><svg class="mt-1 h-4 w-4 text-white shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M20 6.5L9.4 17 4 11.7"/></svg><span>At-risk detection &amp; notifications</span></li>
+          <li class="flex items-start gap-2.5"><svg class="mt-1 h-4 w-4 text-white shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M20 6.5L9.4 17 4 11.7"/></svg><span>Priority support &amp; onboarding</span></li>
+        </ul>
+        <button data-open-auth="signup" class="magnetic mt-8 h-12 rounded-2xl bg-white text-brand-700 font-semibold text-[14.5px] hover:shadow-lift transition-shadow">
+          Start 14-day trial
+        </button>
+      </div>
+
+      <div class="reveal rounded-[26px] border border-ink-200/70 dark:border-white/10 bg-white dark:bg-white/[.045] p-8 flex flex-col shadow-soft" data-delay="220">
+        <div class="text-[13px] font-semibold uppercase tracking-[0.14em] text-ink-500 dark:text-ink-400">Institution</div>
+        <div class="mt-5 flex items-end gap-2">
+          <div class="font-display text-[46px] font-extrabold leading-none">Custom</div>
+        </div>
+        <p class="mt-4 text-[14.5px] leading-relaxed text-ink-600 dark:text-ink-400">
+          Governance, SSO, data residency and dedicated success for large rollouts.
+        </p>
+        <ul class="mt-7 space-y-3 text-[14px] flex-1">
+          <li class="flex items-start gap-2.5"><svg class="mt-1 h-4 w-4 text-mint shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M20 6.5L9.4 17 4 11.7"/></svg><span>SSO / SAML, SCIM provisioning</span></li>
+          <li class="flex items-start gap-2.5"><svg class="mt-1 h-4 w-4 text-mint shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M20 6.5L9.4 17 4 11.7"/></svg><span>Admin governance &amp; audit exports</span></li>
+          <li class="flex items-start gap-2.5"><svg class="mt-1 h-4 w-4 text-mint shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M20 6.5L9.4 17 4 11.7"/></svg><span>Accreditation reporting packs</span></li>
+          <li class="flex items-start gap-2.5"><svg class="mt-1 h-4 w-4 text-mint shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M20 6.5L9.4 17 4 11.7"/></svg><span>Dedicated success manager &amp; SLA</span></li>
+        </ul>
+        <button data-open-auth="signup" class="mt-8 h-12 rounded-2xl border border-ink-200 dark:border-white/12 font-semibold text-[14.5px] hover:border-brand-400 hover:bg-brand-50/60 dark:hover:bg-white/5 transition-colors">
+          Talk to sales
+        </button>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ================= CTA ================= -->
+<section class="relative py-20 sm:py-24">
+  <div class="mx-auto max-w-7xl px-5 sm:px-8">
+    <div class="reveal-scale relative overflow-hidden rounded-[32px] bg-ink-950 text-white">
+      <img src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=1600&q=80"
+           alt="Students in a lecture hall" class="absolute inset-0 h-full w-full object-cover opacity-[.28]" />
+      <div class="absolute inset-0 bg-gradient-to-r from-ink-950 via-ink-950/88 to-brand-950/72"></div>
+      <div class="absolute -right-16 -bottom-24 h-[380px] w-[380px] rounded-full blur-[80px]" style="background:radial-gradient(circle,rgba(124,77,251,.42),transparent 70%)"></div>
+
+      <div class="relative px-7 sm:px-12 py-14 sm:py-20 max-w-2xl">
+        <h2 class="font-display text-[clamp(2.15rem,5vw,3.5rem)] font-extrabold leading-[1.08] tracking-[-0.032em]">
+          Bring every learner into focus
+        </h2>
+        <p class="mt-5 text-[17px] sm:text-[19px] leading-relaxed text-white/76">
+          Join the institutions using LearnLens to make feedback faster, fairer and genuinely useful —
+          for students, faculty and the people who support them.
+        </p>
+        <div class="mt-9 flex flex-wrap gap-3">
+          <button data-open-auth="signup" class="magnetic inline-flex items-center gap-2.5 h-[54px] px-8 rounded-full bg-white text-ink-900 font-semibold text-[15px] hover:shadow-glow transition-shadow">
+            Create your workspace
+            <svg class="h-4.5 w-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h12M11.5 6l6 6-6 6"/></svg>
+          </button>
+          <a href="#platform" class="magnetic inline-flex items-center gap-2.5 h-[54px] px-8 rounded-full border border-white/22 font-semibold text-[15px] hover:bg-white/10 transition-colors">
+            See the platform
+          </a>
+        </div>
+        <div class="mt-8 flex flex-wrap items-center gap-x-7 gap-y-3 text-[12.5px] text-white/62">
+          <span class="flex items-center gap-2"><svg class="h-4 w-4 text-mint" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M20 6.5L9.4 17 4 11.7"/></svg>No credit card required</span>
+          <span class="flex items-center gap-2"><svg class="h-4 w-4 text-mint" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M20 6.5L9.4 17 4 11.7"/></svg>Free for your first course</span>
+          <span class="flex items-center gap-2"><svg class="h-4 w-4 text-mint" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M20 6.5L9.4 17 4 11.7"/></svg>Cancel anytime</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ================= FOOTER ================= -->
+<footer class="relative border-t border-ink-100 dark:border-white/8 bg-ink-50/60 dark:bg-white/[.02]">
+  <div class="mx-auto max-w-7xl px-5 sm:px-8 py-16">
+    <div class="grid gap-10 lg:grid-cols-[1.5fr_1fr_1fr_1fr]">
+
+      <div>
+        <a href="#top" class="flex items-center gap-2.5 w-fit">
+          <div class="h-10 w-10 rounded-2xl bg-gradient-to-br from-brand-600 to-accent-600 grid place-items-center shadow-glow">
+            <svg viewBox="0 0 24 24" class="h-5 w-5 text-white" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round">
+              <circle cx="11" cy="11" r="6.4"/><path d="M20 20l-4.2-4.2"/><path d="M8.6 11.2l1.9 1.9 3.4-3.9"/>
+            </svg>
+          </div>
+          <div>
+            <div class="font-display font-extrabold text-[19px] tracking-tight leading-none">LearnLens</div>
+            <div class="text-[10px] uppercase tracking-[0.18em] text-ink-500 dark:text-ink-400 font-semibold mt-1">Learning Analytics</div>
+          </div>
+        </a>
+        <p class="mt-5 text-[14.5px] leading-relaxed text-ink-600 dark:text-ink-400 max-w-sm">
+          Multimodal student assignment analysis and learning analytics for modern institutions.
+          Built with React, TypeScript, Tailwind and Supabase.
+        </p>
+
+        <!-- newsletter -->
+        <form id="newsletterForm" class="mt-6 max-w-sm">
+          <label for="newsletterEmail" class="text-[11.5px] font-semibold uppercase tracking-[0.14em] text-ink-500 dark:text-ink-400">Product updates</label>
+          <div class="mt-2.5 flex gap-2">
+            <input id="newsletterEmail" type="email" required placeholder="you@institution.edu"
+              class="flex-1 h-12 rounded-2xl border border-ink-200 dark:border-white/12 bg-white dark:bg-white/[.05] px-4 text-[14px] outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 transition-all" />
+            <button type="submit" class="h-12 px-5 rounded-2xl bg-ink-900 dark:bg-white text-white dark:text-ink-900 text-[14px] font-semibold hover:shadow-lift transition-shadow">
+              Join
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <div>
+        <h3 class="text-[11.5px] font-bold uppercase tracking-[0.16em] text-ink-500 dark:text-ink-400">Product</h3>
+        <ul class="mt-5 space-y-3 text-[14px]">
+          <li><a href="#platform" class="link-underline text-ink-700 dark:text-ink-200 hover:text-brand-600 dark:hover:text-brand-300 transition-colors">Multimodal analysis</a></li>
+          <li><a href="#roles" class="link-underline text-ink-700 dark:text-ink-200 hover:text-brand-600 dark:hover:text-brand-300 transition-colors">Role dashboards</a></li>
+          <li><a href="#ai" class="link-underline text-ink-700 dark:text-ink-200 hover:text-brand-600 dark:hover:text-brand-300 transition-colors">Mock AI engine</a></li>
+          <li><a href="#analytics" class="link-underline text-ink-700 dark:text-ink-200 hover:text-brand-600 dark:hover:text-brand-300 transition-colors">Learning analytics</a></li>
+          <li><a href="#pricing" class="link-underline text-ink-700 dark:text-ink-200 hover:text-brand-600 dark:hover:text-brand-300 transition-colors">Pricing</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h3 class="text-[11.5px] font-bold uppercase tracking-[0.16em] text-ink-500 dark:text-ink-400">Platform</h3>
+        <ul class="mt-5 space-y-3 text-[14px]">
+          <li><a href="#security" class="link-underline text-ink-700 dark:text-ink-200 hover:text-brand-600 dark:hover:text-brand-300 transition-colors">Row-level security</a></li>
+          <li><a href="#security" class="link-underline text-ink-700 dark:text-ink-200 hover:text-brand-600 dark:hover:text-brand-300 transition-colors">Supabase schema</a></li>
+          <li><a href="#security" class="link-underline text-ink-700 dark:text-ink-200 hover:text-brand-600 dark:hover:text-brand-300 transition-colors">Audit &amp; compliance</a></li>
+          <li><a href="#platform" class="link-underline text-ink-700 dark:text-ink-200 hover:text-brand-600 dark:hover:text-brand-300 transition-colors">Peer review</a></li>
+          <li><a href="#platform" class="link-underline text-ink-700 dark:text-ink-200 hover:text-brand-600 dark:hover:text-brand-300 transition-colors">Notifications</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h3 class="text-[11.5px] font-bold uppercase tracking-[0.16em] text-ink-500 dark:text-ink-400">Company</h3>
+        <ul class="mt-5 space-y-3 text-[14px]">
+          <li><a href="#" class="link-underline text-ink-700 dark:text-ink-200 hover:text-brand-600 dark:hover:text-brand-300 transition-colors">About</a></li>
+          <li><a href="#" class="link-underline text-ink-700 dark:text-ink-200 hover:text-brand-600 dark:hover:text-brand-300 transition-colors">Careers</a></li>
+          <li><a href="#" class="link-underline text-ink-700 dark:text-ink-200 hover:text-brand-600 dark:hover:text-brand-300 transition-colors">Documentation</a></li>
+          <li><a href="#" class="link-underline text-ink-700 dark:text-ink-200 hover:text-brand-600 dark:hover:text-brand-300 transition-colors">Privacy policy</a></li>
+          <li><a href="#" class="link-underline text-ink-700 dark:text-ink-200 hover:text-brand-600 dark:hover:text-brand-300 transition-colors">Terms of service</a></li>
+        </ul>
+      </div>
+
+    </div>
+
+    <div class="mt-14 pt-8 border-t border-ink-100 dark:border-white/8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
+      <p class="text-[13px] text-ink-500 dark:text-ink-400">
+        © <span id="year">2025</span> LearnLens. All rights reserved. Crafted for educators and learners.
+      </p>
+      <div class="flex items-center gap-3">
+        <a href="#" aria-label="X" class="h-10 w-10 rounded-full border border-ink-200 dark:border-white/10 grid place-items-center text-ink-600 dark:text-ink-300 hover:border-brand-400 hover:text-brand-600 dark:hover:text-brand-300 transition-colors">
+          <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 3h3.1l-6.8 7.8L21.8 21h-6.2l-4.9-6.4L5.1 21H2l7.3-8.3L2.3 3h6.4l4.4 5.8zm-1.1 16.1h1.7L7.7 4.8H5.9z"/></svg>
+        </a>
+        <a href="#" aria-label="LinkedIn" class="h-10 w-10 rounded-full border border-ink-200 dark:border-white/10 grid place-items-center text-ink-600 dark:text-ink-300 hover:border-brand-400 hover:text-brand-600 dark:hover:text-brand-300 transition-colors">
+          <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor"><path d="M6.9 20.5H3.6V9.2h3.3zM5.2 7.7A1.9 1.9 0 1 1 5.2 4a1.9 1.9 0 0 1 0 3.7zM20.5 20.5h-3.3v-5.5c0-1.3 0-3-1.8-3s-2.1 1.4-2.1 2.9v5.6H10V9.2h3.2v1.5h.05c.45-.85 1.5-1.8 3.1-1.8 3.3 0 3.9 2.2 3.9 5z"/></svg>
+        </a>
+        <a href="#" aria-label="GitHub" class="h-10 w-10 rounded-full border border-ink-200 dark:border-white/10 grid place-items-center text-ink-600 dark:text-ink-300 hover:border-brand-400 hover:text-brand-600 dark:hover:text-brand-300 transition-colors">
+          <svg class="h-4.5 w-4.5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.2a9.8 9.8 0 0 0-3.1 19.1c.5.1.7-.2.7-.5v-1.7c-2.7.6-3.3-1.3-3.3-1.3-.5-1.1-1.1-1.4-1.1-1.4-.9-.6.07-.6.07-.6 1 .07 1.5 1 1.5 1 .9 1.5 2.3 1.1 2.9.8.1-.6.3-1.1.6-1.3-2.2-.25-4.5-1.1-4.5-4.9 0-1.1.4-2 1-2.7-.1-.25-.4-1.3.1-2.7 0 0 .8-.25 2.7 1a9.4 9.4 0 0 1 5 0c1.9-1.3 2.7-1 2.7-1 .5 1.4.2 2.45.1 2.7.6.7 1 1.6 1 2.7 0 3.8-2.3 4.65-4.5 4.9.35.3.7.9.7 1.8v2.7c0 .3.2.6.7.5A9.8 9.8 0 0 0 12 2.2z"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- ================= AUTH MODAL ================= -->
+<div id="authModal" class="modal-backdrop fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-4">
+  <div class="absolute inset-0 bg-ink-950/60 backdrop-blur-[6px]" data-close-modal></div>
+
+  <div class="modal-card relative w-full max-w-[880px] max-h-[92vh] overflow-y-auto rounded-[28px] bg-white dark:bg-ink-900 shadow-lift border border-ink-200/70 dark:border-white/10">
+    <button data-close-modal aria-label="Close" class="absolute right-4 top-4 z-10 h-10 w-10 rounded-full border border-ink-200 dark:border-white/12 bg-white/80 dark:bg-ink-900/70 grid place-items-center hover:rotate-90 transition-transform duration-300">
+      <svg class="h-4.5 w-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+
+    <div class="grid lg:grid-cols-2">
+      <!-- visual side -->
+      <div class="relative hidden lg:block rounded-l-[28px] overflow-hidden">
+        <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1000&q=80"
+             alt="Students collaborating" class="absolute inset-0 h-full w-full object-cover" />
+        <div class="absolute inset-0 bg-gradient-to-t from-brand-950 via-brand-950/72 to-accent-900/42"></div>
+        <div class="relative h-full flex flex-col justify-end p-8 text-white">
+          <div class="inline-flex items-center gap-2 w-fit px-3 py-1.5 rounded-full bg-white/14 border border-white/18 text-[11px] font-semibold">
+            <span class="h-1.5 w-1.5 rounded-full bg-mint"></span> 12,400+ educators onboard
+          </div>
+          <h3 class="mt-5 font-display text-[26px] font-bold leading-tight">Everything you need to see learning clearly.</h3>
+          <ul class="mt-6 space-y-3 text-[13.5px] text-white/82">
+            <li class="flex items-start gap-2.5"><svg class="mt-1 h-4 w-4 text-mint shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M20 6.5L9.4 17 4 11.7"/></svg>Role-based dashboards &amp; permissions</li>
+            <li class="flex items-start gap-2.5"><svg class="mt-1 h-4 w-4 text-mint shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M20 6.5L9.4 17 4 11.7"/></svg>Multimodal submissions &amp; AI feedback</li>
+            <li class="flex items-start gap-2.5"><svg class="mt-1 h-4 w-4 text-mint shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M20 6.5L9.4 17 4 11.7"/></svg>Supabase RLS &amp; full audit trail</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- form side -->
+      <div class="p-7 sm:p-10">
+        <!-- tabs -->
+        <div class="inline-flex items-center gap-1 p-1 rounded-full bg-ink-100 dark:bg-white/[.06]">
+          <button id="tabSignin" class="px-5 py-2 rounded-full text-[13px] font-semibold bg-white dark:bg-white/12 text-ink-900 dark:text-white shadow-soft transition-all">Sign in</button>
+          <button id="tabSignup" class="px-5 py-2 rounded-full text-[13px] font-semibold text-ink-600 dark:text-ink-300 transition-all">Create account</button>
+        </div>
+
+        <h2 id="authTitle" class="mt-6 font-display text-[26px] sm:text-[30px] font-extrabold leading-tight tracking-tight">
+          Welcome back
+        </h2>
+        <p id="authSubtitle" class="mt-2 text-[14.5px] text-ink-600 dark:text-ink-400">
+          Sign in to your LearnLens workspace to continue.
+        </p>
+
+        <form id="authForm" class="mt-7 space-y-4">
+          <div id="nameField" class="hidden">
+            <label class="text-[12px] font-semibold text-ink-600 dark:text-ink-300">Full name</label>
+            <input type="text" placeholder="Alex Morgan"
+              class="mt-1.5 w-full h-12 rounded-2xl border border-ink-200 dark:border-white/12 bg-white dark:bg-white/[.05] px-4 text-[14px] outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 transition-all" />
+          </div>
+
+          <div>
+            <label class="text-[12px] font-semibold text-ink-600 dark:text-ink-300">Email address</label>
+            <input type="email" required placeholder="you@institution.edu"
+              class="mt-1.5 w-full h-12 rounded-2xl border border-ink-200 dark:border-white/12 bg-white dark:bg-white/[.05] px-4 text-[14px] outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 transition-all" />
+          </div>
+
+          <div>
+            <label class="text-[12px] font-semibold text-ink-600 dark:text-ink-300">Password</label>
+            <div class="relative mt-1.5">
+              <input id="authPassword" type="password" required minlength="6" placeholder="••••••••"
+                class="w-full h-12 rounded-2xl border border-ink-200 dark:border-white/12 bg-white dark:bg-white/[.05] px-4 pr-12 text-[14px] outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 transition-all" />
+              <button type="button" id="togglePassword" class="absolute right-3 top-1/2 -translate-y-1/2 h-8 w-8 grid place-items-center rounded-full text-ink-500 hover:bg-ink-100 dark:hover:bg-white/8 transition-colors" aria-label="Show password">
+                <svg class="h-4.5 w-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2.5 12s3.6-6.4 9.5-6.4S21.5 12 21.5 12s-3.6 6.4-9.5 6.4S2.5 12 2.5 12z"/><circle cx="12" cy="12" r="2.9"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- role selection -->
+          <div id="roleField">
+            <label class="text-[12px] font-semibold text-ink-600 dark:text-ink-300">I am joining as</label>
+            <div class="mt-2.5 grid grid-cols-2 sm:grid-cols-3 gap-2" id="roleChips">
+              <button type="button" class="role-chip h-11 rounded-2xl border border-ink-200 dark:border-white/12 text-[12.5px] font-medium hover:border-brand-400 transition-colors" data-value="Student">Student</button>
+              <button type="button" class="role-chip h-11 rounded-2xl border border-ink-200 dark:border-white/12 text-[12.5px] font-medium hover:border-brand-400 transition-colors" data-value="Faculty">Faculty</button>
+              <button type="button" class="role-chip h-11 rounded-2xl border border-ink-200 dark:border-white/12 text-[12.5px] font-medium hover:border-brand-400 transition-colors" data-value="Mentor">Mentor</button>
+              <button type="button" class="role-chip h-11 rounded-2xl border border-ink-200 dark:border-white/12 text-[12.5px] font-medium hover:border-brand-400 transition-colors" data-value="Coordinator">Coordinator</button>
+              <button type="button" class="role-chip h-11 rounded-2xl border border-ink-200 dark:border-white/12 text-[12.5px] font-medium hover:border-brand-400 transition-colors" data-value="Admin">Admin</button>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between pt-1">
+            <label class="flex items-center gap-2 text-[12.5px] text-ink-600 dark:text-ink-300 cursor-pointer">
+              <input type="checkbox" class="h-4 w-4 rounded border-ink-300 text-brand-600 focus:ring-brand-500/30" />
+              Remember me
+            </label>
+            <a href="#" class="text-[12.5px] font-semibold text-brand-600 dark:text-brand-300 hover:underline">Forgot password?</a>
+          </div>
+
+          <button type="submit" id="authSubmit"
+            class="w-full h-[52px] rounded-2xl bg-gradient-to-r from-brand-600 to-accent-600 text-white font-semibold text-[15px] hover:shadow-glow transition-shadow">
+            Sign in to LearnLens
+          </button>
+
+          <div class="flex items-center gap-3">
+            <div class="h-px flex-1 bg-ink-200 dark:bg-white/10"></div>
+            <span class="text-[11px] uppercase tracking-[0.14em] text-ink-400 dark:text-ink-500">or</span>
+            <div class="h-px flex-1 bg-ink-200 dark:bg-white/10"></div>
+          </div>
+
+          <button type="button" id="ssoBtn"
+            class="w-full h-[52px] rounded-2xl border border-ink-200 dark:border-white/12 font-semibold text-[14px] hover:border-brand-400 hover:bg-brand-50/50 dark:hover:bg-white/5 transition-colors flex items-center justify-center gap-2.5">
+            <svg class="h-4.5 w-4.5 text-brand-600 dark:text-brand-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3.4" y="5.4" width="17.2" height="13.2" rx="2.6"/><path d="M3.6 8.2l8.4 5.4 8.4-5.4"/></svg>
+            Continue with institution SSO
+          </button>
+        </form>
+
+        <p class="mt-6 text-[11.5px] leading-relaxed text-ink-500 dark:text-ink-400">
+          By continuing you agree to LearnLens's Terms of Service and Privacy Policy. This is a
+          demonstration interface — no credentials are transmitted or stored.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= TOAST ================= -->
+<div id="toast" class="toast fixed bottom-6 left-1/2 -translate-x-1/2 z-[110] w-[calc(100%-2rem)] max-w-md">
+  <div class="flex items-start gap-3.5 rounded-2xl border border-ink-200/80 dark:border-white/12 bg-white dark:bg-ink-900 shadow-lift px-5 py-4">
+    <div class="h-9 w-9 rounded-full bg-emerald-500/14 text-emerald-600 dark:text-emerald-300 grid place-items-center shrink-0">
+      <svg class="h-4.5 w-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M20 6.5L9.4 17 4 11.7"/></svg>
+    </div>
+    <div>
+      <div id="toastTitle" class="text-[13.5px] font-semibold">Success</div>
+      <div id="toastMessage" class="mt-0.5 text-[12.5px] text-ink-600 dark:text-ink-400 leading-relaxed">Your request has been completed.</div>
+    </div>
+  </div>
+</div>
+
+
+

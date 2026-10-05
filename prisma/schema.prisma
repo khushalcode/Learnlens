@@ -1,0 +1,236 @@
+// LearnLens — Multimodal Student Assignment Analysis & Learning Analytics
+// Prisma schema with 11 core tables + linking tables
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ─────────────────────────────────────────────────────────
+// USERS (with role-based access)
+// ─────────────────────────────────────────────────────────
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  password  String   // plaintext for demo (NextAuth credentials provider)
+  role      String   // STUDENT | FACULTY | MENTOR | COORDINATOR | ADMIN
+  avatarUrl String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Self-relation: mentor → students (only STUDENTs have mentorId)
+  mentorId String?
+  mentor   User?    @relation("MentorToStudent", fields: [mentorId], references: [id])
+  mentees  User[]   @relation("MentorToStudent")
+
+  // Relations
+  enrollments       Enrollment[]
+  taughtCourses     Course[]     @relation("FacultyCourses")
+  coordinatedCourses Course[]    @relation("CoordinatorCourses")
+  submissions       Submission[]
+  evaluations       Evaluation[]
+  peerReviews       PeerReview[]
+  feedbackGiven     Feedback[]   @relation("FeedbackAuthor")
+  feedbackReceived  Feedback[]   @relation("FeedbackRecipient")
+  notifications     Notification[]
+}
+
+// ─────────────────────────────────────────────────────────
+// COURSES + ENROLLMENTS
+// ─────────────────────────────────────────────────────────
+model Course {
+  id            String   @id @default(cuid())
+  code          String   @unique
+  name          String
+  description   String?
+  semester      String   @default("2026-1")
+  createdAt      DateTime @default(now())
+
+  facultyId       String
+  faculty         User     @relation("FacultyCourses", fields: [facultyId], references: [id])
+  coordinatorId   String?
+  coordinator     User?    @relation("CoordinatorCourses", fields: [coordinatorId], references: [id])
+
+  enrollments   Enrollment[]
+  assignments   Assignment[]
+  competencies  Competency[]
+}
+
+model Enrollment {
+  id       String @id @default(cuid())
+  userId   String
+  courseId String
+  user     User   @relation(fields: [userId], references: [id])
+  course   Course @relation(fields: [courseId], references: [id])
+
+  @@unique([userId, courseId])
+}
+
+// ─────────────────────────────────────────────────────────
+// ASSIGNMENTS + RUBRICS
+// ─────────────────────────────────────────────────────────
+model Assignment {
+  id           String   @id @default(cuid())
+  title        String
+  description  String?
+  type         String   // TEXT | IMAGE | AUDIO | VIDEO
+  deadline     DateTime
+  courseId     String
+  course       Course   @relation(fields: [courseId], references: [id])
+  competencyId String?
+  competency   Competency? @relation("CompetencyAssignment", fields: [competencyId], references: [id])
+  createdAt    DateTime @default(now())
+
+  rubric       Rubric?
+  submissions  Submission[]
+}
+
+model Rubric {
+  id           String   @id @default(cuid())
+  assignmentId String   @unique
+  assignment   Assignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  criteria     RubricCriterion[]
+}
+
+model RubricCriterion {
+  id          String   @id @default(cuid())
+  rubricId    String
+  rubric      Rubric   @relation(fields: [rubricId], references: [id], onDelete: Cascade)
+  name        String
+  description String?
+  weight      Float    // 0.0 - 1.0, sum to 1.0
+  maxScore    Float    @default(10.0)
+
+  evaluations Evaluation[]
+  peerReviews PeerReview[]
+}
+
+// ─────────────────────────────────────────────────────────
+// SUBMISSIONS + EVALUATIONS + PEER REVIEWS
+// ─────────────────────────────────────────────────────────
+model Submission {
+  id           String   @id @default(cuid())
+  assignmentId String
+  assignment   Assignment @relation(fields: [assignmentId], references: [id])
+  userId       String
+  user         User     @relation(fields: [userId], references: [id])
+  content      String?  // for TEXT type
+  fileUrl      String?  // for IMAGE/AUDIO/VIDEO (legacy — kept for backward compat with seed)
+  fileName     String?
+  fileType     String?  // mime type (legacy alias of mimeType)
+  // New Supabase-style storage fields (Feature 1)
+  storagePath  String?  // bucket-relative path (e.g. "submissions/abc-123.jpg")
+  mimeType     String?  // explicit mime type for the viewer
+  fileSize     Int?     // bytes
+  mediaExtractedText String? // AI-extracted text from media (image description / audio transcription / video description)
+  status       String   @default("SUBMITTED") // SUBMITTED | EVALUATED | LATE | PENDING
+  submittedAt  DateTime @default(now())
+
+  evaluations        Evaluation[]
+  peerReviews        PeerReview[]
+  similarityReports  SimilarityReport[]
+  feedback           Feedback[]
+}
+
+model Evaluation {
+  id           String   @id @default(cuid())
+  submissionId String
+  submission   Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  evaluatorId  String
+  evaluator    User     @relation(fields: [evaluatorId], references: [id])
+  criterionId  String
+  criterion    RubricCriterion @relation(fields: [criterionId], references: [id])
+  score        Float
+  comment      String?
+  isPeer       Boolean  @default(false)
+  createdAt    DateTime @default(now())
+
+  @@unique([submissionId, evaluatorId, criterionId])
+}
+
+model PeerReview {
+  id           String   @id @default(cuid())
+  submissionId String
+  submission   Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  reviewerId   String
+  reviewer     User     @relation(fields: [reviewerId], references: [id])
+  criterionId  String
+  criterion    RubricCriterion @relation(fields: [criterionId], references: [id])
+  score        Float
+  comment      String?
+  createdAt    DateTime @default(now())
+
+  @@unique([submissionId, reviewerId, criterionId])
+}
+
+// ─────────────────────────────────────────────────────────
+// AI SIMULATION REPORTS (mock logic + real AI fallback)
+// ─────────────────────────────────────────────────────────
+model SimilarityReport {
+  id                    String   @id @default(cuid())
+  submissionId          String
+  submission            Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  comparedToSubmissionId String?
+  similarity            Float    // 0-100 %
+  autoScore             Float?   // suggested score 0-100
+  feedbackText          String?
+  // Real-AI fields (Feature 3): cache extracted text + per-criterion reasoning + provider used
+  mediaExtractedText    String?  // text extracted from media via VLM/ASR/video-understand
+  criteriaReasoning     String?  // JSON-stringified per-criterion reasoning from LLM
+  confidence            Float?   // LLM confidence 0-1
+  provider              String?  // "MOCK" | "ZAI_LLM" | "ZAI_VLM" | "ZAI_ASR" | "ZAI_VIDEO"
+  createdAt             DateTime @default(now())
+}
+
+// ─────────────────────────────────────────────────────────
+// NOTIFICATIONS (Feature 4) — in-app notifications bell
+// ─────────────────────────────────────────────────────────
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String   // recipient
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      String   // NEW_ASSIGNMENT | DEADLINE_REMINDER | RESULT_PUBLISHED | PEER_REVIEW_ASSIGNED | AI_ANALYSIS_READY
+  title     String
+  body      String
+  link      String?  // optional client-side route hint (e.g. "assignments:abc123")
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId, read])
+}
+
+// ─────────────────────────────────────────────────────────
+// COMPETENCIES (CO/PO mapping)
+// ─────────────────────────────────────────────────────────
+model Competency {
+  id        String   @id @default(cuid())
+  code      String   // CO1, CO2, PO1, PO2, etc.
+  name      String
+  type      String   // CO (Course Outcome) | PO (Program Outcome)
+  courseId  String
+  course    Course   @relation(fields: [courseId], references: [id])
+  targetLevel Float? @default(75.0) // target attainment %
+
+  assignments Assignment[] @relation("CompetencyAssignment")
+}
+
+// ─────────────────────────────────────────────────────────
+// FEEDBACK (faculty → student, or AI-generated)
+// ─────────────────────────────────────────────────────────
+model Feedback {
+  id           String   @id @default(cuid())
+  submissionId String
+  submission   Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  authorId     String?
+  author       User?    @relation("FeedbackAuthor", fields: [authorId], references: [id])
+  recipientId String
+  recipient    User     @relation("FeedbackRecipient", fields: [recipientId], references: [id])
+  text         String
+  source       String   @default("FACULTY") // FACULTY | PEER | AI_SIMULATION
+  createdAt    DateTime @default(now())
+}
