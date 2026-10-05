@@ -1,9 +1,11 @@
 // Row-Level Security helpers — mimic Supabase RLS at the API route layer.
 // Every user-scoped read/write must verify ownership + role.
+//
+// Fully Supabase-backed — no Prisma calls.
 
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { db } from "@/lib/db";
+import { createSupabaseAdminClient } from "@/lib/supabase/server";
 
 export type SessionUser = {
   id: string;
@@ -109,14 +111,28 @@ export async function requireSelfOrRole(
 
 /**
  * Verify the student is enrolled in the course that owns this assignment.
+ * Uses the admin client (bypasses RLS) so we can read enrollments across
+ * all users — the calling API route has already verified the requester's
+ * identity and role via requireRole().
  */
 export async function verifyEnrollmentByAssignment(userId: string, assignmentId: string): Promise<boolean> {
-  const assignment = await db.assignment.findUnique({
-    where: { id: assignmentId },
-    include: { course: { include: { enrollments: true } } },
-  });
-  if (!assignment) return false;
-  return assignment.course.enrollments.some((e) => e.userId === userId);
+  const supabase = createSupabaseAdminClient();
+  const { data: assignment, error } = await supabase
+    .from("assignments")
+    .select(`
+      id,
+      course:courses (
+        id,
+        enrollments ( user_id )
+      )
+    `)
+    .eq("id", assignmentId)
+    .maybeSingle();
+
+  if (error || !assignment) return false;
+  const course = assignment.course as any;
+  if (!course?.enrollments) return false;
+  return course.enrollments.some((e: any) => e.user_id === userId);
 }
 
 /**

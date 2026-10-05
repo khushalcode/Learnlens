@@ -171,10 +171,19 @@ export function LandingPage({ htmlBody }: LandingPageProps) {
 
       {/* Auth Modal — Sign in / Sign up */}
       <Dialog open={authMode !== null} onOpenChange={(o) => !o && setAuthMode(null)}>
-        <DialogContent className="sm:max-w-md p-0 overflow-hidden gap-0">
+        <DialogContent className="sm:max-w-md p-0 overflow-hidden gap-0 [&>button]:hidden">
           {/* Header band with logo + gradient */}
           <div className="relative bg-gradient-to-br from-brand-600 to-accent-600 p-6 pb-8 text-white">
             <div className="absolute inset-0 hero-grid opacity-40 pointer-events-none" />
+            {/* Explicit close button — always visible, high z-index, doesn't depend on shadcn default */}
+            <button
+              type="button"
+              onClick={() => setAuthMode(null)}
+              aria-label="Close"
+              className="absolute right-4 top-4 z-20 h-9 w-9 rounded-full bg-white/15 hover:bg-white/25 backdrop-blur-md grid place-items-center text-white transition-colors"
+            >
+              <X className="h-5 w-5" />
+            </button>
             <div className="relative">
               <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-white/15 backdrop-blur-md mb-3">
                 <GraduationCap className="h-6 w-6" />

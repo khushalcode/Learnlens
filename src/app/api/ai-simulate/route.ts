@@ -1,8 +1,8 @@
-// POST /api/ai-simulate?submissionId=xxx
+// POST /api/ai-simulate?submissionId=xxx (Supabase-backed)
 //
-// Re-runs AI analysis for a submission. Refactored (Feature 3) to use the
-// real z-ai-web-dev-sdk via the lib/ai/* helpers, with deterministic mock
-// fallback on any failure. The endpoint:
+// Re-runs AI analysis for a submission. Uses the real z-ai-web-dev-sdk via
+// the lib/ai/* helpers, with deterministic mock fallback on any failure. The
+// endpoint:
 //
 //   1. Resolves the submission + its assignment + rubric criteria.
 //   2. Extracts textual content (TEXT type → content; media → VLM/ASR/video).
@@ -11,7 +11,7 @@
 //   4. Computes auto-score via LLM with strict-JSON prompt — falls back to
 //      weighted-criteria mock on parse failure.
 //   5. Generates feedback via LLM — falls back to template feedback.
-//   6. Upserts a single SimilarityReport row with the new fields:
+//   6. Upserts a single similarity_reports row with the new fields:
 //      similarity, autoScore, feedbackText, mediaExtractedText,
 //      criteriaReasoning, confidence, provider.
 //   7. Triggers AI_ANALYSIS_READY notification to the submission's student.
@@ -22,7 +22,7 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { db } from "@/lib/db";
+import { createSupabaseAdminClient } from "@/lib/supabase/server";
 import { computeFinalScore, computeAutoScore } from "@/lib/queries";
 import { computeTextSimilarity } from "@/lib/ai/similarity";
 import { extractMediaContent, getSubmissionContentText } from "@/lib/ai/media";
@@ -41,26 +41,52 @@ export async function POST(req: Request) {
   const submissionId = searchParams.get("submissionId");
   if (!submissionId) return NextResponse.json({ error: "submissionId required" }, { status: 400 });
 
-  const submission = await db.submission.findUnique({
-    where: { id: submissionId },
-    include: {
-      assignment: {
-        include: { rubric: { include: { criteria: true } } },
-      },
-      evaluations: { where: { isPeer: false }, include: { criterion: true } },
-      peerReviews: { include: { criterion: true } },
-      similarityReports: true,
-    },
-  });
+  const supabase = createSupabaseAdminClient();
+
+  // Fetch the submission + assignment + rubric + criteria + evaluations + peer_reviews + existing reports.
+  const { data: submission } = await supabase
+    .from("submissions")
+    .select(`
+      id,
+      assignment_id,
+      user_id,
+      content,
+      storage_path,
+      mime_type,
+      file_size,
+      file_name,
+      file_url,
+      file_type,
+      status,
+      submitted_at,
+      assignment:assignments (
+        id, title, description, type, deadline, course_id, competency_id, created_at,
+        rubric:rubrics (id, assignment_id, criteria:rubric_criteria (id, name, description, weight, max_score, rubric_id))
+      ),
+      evaluations:evaluations (
+        id, submission_id, evaluator_id, criterion_id, score, comment, is_peer, created_at,
+        criterion:rubric_criteria (id, name, description, weight, max_score, rubric_id)
+      ),
+      peerReviews:peer_reviews (
+        id, submission_id, reviewer_id, criterion_id, score, comment, created_at,
+        criterion:rubric_criteria (id, name, description, weight, max_score, rubric_id)
+      ),
+      similarityReports:similarity_reports (
+        id, submission_id, compared_to_submission_id, similarity, auto_score, feedback_text,
+        media_extracted_text, criteria_reasoning, confidence, provider, created_at
+      )
+    `)
+    .eq("id", submissionId)
+    .maybeSingle();
+
   if (!submission) return NextResponse.json({ error: "Submission not found" }, { status: 404 });
 
   // ─────────────────────────────────────────────────────────
   // Step 1: get the textual content (extract from media if needed).
   // ─────────────────────────────────────────────────────────
-  let contentText = await getSubmissionContentText(submissionId, submission);
+  let contentText = await getSubmissionContentText(submissionId, submission as any);
   let mediaProvider = "MOCK";
   if (!contentText || contentText.length < 5) {
-    // Try to extract via VLM / ASR / video-understand.
     const extracted = await extractMediaContent(submissionId);
     contentText = extracted.text;
     mediaProvider = extracted.provider;
@@ -79,7 +105,6 @@ export async function POST(req: Request) {
     similarityProvider = sim.provider;
   } catch (err: any) {
     console.error("[ai-simulate] similarity failed, fallback to mock:", err?.message || err);
-    // Mock fallback — keep the legacy deterministic value.
     const { computeSimilarity } = await import("@/lib/queries");
     similarity = computeSimilarity(submissionId);
   }
@@ -87,13 +112,13 @@ export async function POST(req: Request) {
   // ─────────────────────────────────────────────────────────
   // Step 3: auto-score via LLM (with mock fallback).
   // ─────────────────────────────────────────────────────────
-  const criteria = submission.assignment?.rubric?.criteria ?? [];
-  const criteriaInput = criteria.map((c) => ({
+  const criteria = (submission as any).assignment?.rubric?.criteria ?? [];
+  const criteriaInput = criteria.map((c: any) => ({
     criterionId: c.id,
     name: c.name,
     description: c.description ?? undefined,
     weight: c.weight,
-    maxScore: c.maxScore,
+    maxScore: c.max_score,
   }));
   let autoScore = 0;
   let criteriaScores: { criterionId: string; score: number; reasoning: string }[] = [];
@@ -105,7 +130,7 @@ export async function POST(req: Request) {
     const llmScore = await computeAutoScoreLLM(
       submissionId,
       criteriaInput,
-      submission.assignment?.description ?? "",
+      (submission as any).assignment?.description ?? "",
       contentText
     );
     autoScore = llmScore.totalScore;
@@ -116,11 +141,13 @@ export async function POST(req: Request) {
   } catch (err: any) {
     console.error("[ai-simulate] scoring failed, fallback to mock:", err?.message || err);
     autoScore = computeAutoScore(
-      submission.evaluations.map((e) => ({
-        score: e.score,
-        max: e.criterion.maxScore,
-        weight: e.criterion.weight,
-      }))
+      ((submission as any).evaluations ?? [])
+        .filter((e: any) => e.is_peer === false)
+        .map((e: any) => ({
+          score: e.score,
+          max: e.criterion?.max_score ?? 10,
+          weight: e.criterion?.weight ?? 0.33,
+        }))
     );
   }
 
@@ -132,14 +159,14 @@ export async function POST(req: Request) {
   try {
     const fbInput: { name: string; score: number; maxScore: number }[] = criteriaScores.length
       ? criteriaScores.map((cs) => {
-          const c = criteria.find((cc) => cc.id === cs.criterionId)!;
-          return { name: c?.name ?? "Criterion", score: cs.score, maxScore: c?.maxScore ?? 10 };
+          const c = criteria.find((cc: any) => cc.id === cs.criterionId);
+          return { name: c?.name ?? "Criterion", score: cs.score, maxScore: c?.max_score ?? 10 };
         })
-      : criteria.map((c) => ({ name: c.name, score: c.maxScore * 0.7, maxScore: c.maxScore }));
+      : criteria.map((c: any) => ({ name: c.name, score: c.max_score * 0.7, maxScore: c.max_score }));
     const fb = await generateFeedbackLLM(
       submissionId,
       fbInput,
-      submission.assignment?.description ?? "",
+      (submission as any).assignment?.description ?? "",
       contentText
     );
     feedbackText = fb.text;
@@ -162,40 +189,46 @@ export async function POST(req: Request) {
     .join("+") || "MOCK";
 
   // ─────────────────────────────────────────────────────────
-  // Step 5: upsert SimilarityReport.
+  // Step 5: upsert similarity_reports.
   // ─────────────────────────────────────────────────────────
-  const existing = submission.similarityReports[0];
-  let report;
-  const dataPayload: any = {
+  const existing = (submission as any).similarityReports?.[0];
+  const dataPayload: Record<string, unknown> = {
     similarity,
-    autoScore,
-    feedbackText,
-    mediaExtractedText: contentText || null,
-    criteriaReasoning: criteriaReasoningJson,
+    auto_score: autoScore,
+    feedback_text: feedbackText,
+    media_extracted_text: contentText || null,
+    criteria_reasoning: criteriaReasoningJson,
     confidence,
-    comparedToSubmissionId,
+    compared_to_submission_id: comparedToSubmissionId,
     provider: providerLabel,
   };
+  let report: any = null;
   if (existing) {
-    report = await db.similarityReport.update({ where: { id: existing.id }, data: dataPayload });
+    const { data: updated } = await supabase
+      .from("similarity_reports")
+      .update(dataPayload)
+      .eq("id", existing.id)
+      .select()
+      .single();
+    report = updated;
   } else {
-    report = await db.similarityReport.create({
-      data: { submissionId, ...dataPayload },
-    });
+    const { data: inserted } = await supabase
+      .from("similarity_reports")
+      .insert({ submission_id: submissionId, ...dataPayload })
+      .select()
+      .single();
+    report = inserted;
   }
 
   // ─────────────────────────────────────────────────────────
   // Step 6: notify the student that AI analysis is ready.
   // ─────────────────────────────────────────────────────────
-  // Only fire when the AI run actually completed (not just a mock fallback) —
-  // mock-only runs already happened at submission time and we don't want to
-  // spam the bell on every manual "Run AI Analysis" click.
   try {
     if (providerLabel !== "MOCK") {
       await notify(
-        submission.userId,
+        (submission as any).user_id,
         NOTIF_TYPES.AI_ANALYSIS_READY,
-        `AI analysis ready: ${submission.assignment?.title ?? "your submission"}`,
+        `AI analysis ready: ${(submission as any).assignment?.title ?? "your submission"}`,
         `Similarity ${similarity.toFixed(1)}% · Auto-score ${autoScore.toFixed(1)}% · provider: ${providerLabel}`,
         `insights:`
       );
@@ -205,7 +238,7 @@ export async function POST(req: Request) {
   }
 
   // Also refresh final score for the response payload.
-  const finalScore = await computeFinalScore(submission.id);
+  const finalScore = await computeFinalScore(submissionId);
 
   return NextResponse.json({ report, finalScore, provider: providerLabel });
 }

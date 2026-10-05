@@ -3,13 +3,16 @@
 // word-frequency vectors directly and cosine them.
 // For media submissions (image/audio/video), the caller should first
 // extract text via media.ts (VLM/ASR/video-understand) and pass it here.
+//
+// Fully Supabase-backed — uses the server client (subject to RLS).
 
-import { db } from "@/lib/db";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export interface SimilarityResult {
   similarity: number; // 0-100
   matchedSubmissionId: string | null;
   matchedStudentName?: string;
+  provider: "ZAI_COSINE" | "MOCK";
 }
 
 // ─────────────────────────────────────────────────────────
@@ -41,9 +44,7 @@ export function tfVector(tokens: string[]): Map<string, number> {
   return v;
 }
 
-// Cosine similarity between two TF vectors (we treat any token
-// not in both docs as zero contribution, which makes this equivalent
-// to cosine over a sparse shared vocabulary).
+// Cosine similarity between two TF vectors
 export function cosineSim(a: Map<string, number>, b: Map<string, number>): number {
   let dot = 0;
   let magA = 0;
@@ -51,7 +52,6 @@ export function cosineSim(a: Map<string, number>, b: Map<string, number>): numbe
   for (const [, v] of a) magA += v * v;
   for (const [, v] of b) magB += v * v;
   if (magA === 0 || magB === 0) return 0;
-  // Iterate smaller map
   const [small, large] = a.size < b.size ? [a, b] : [b, a];
   for (const [t, v] of small) {
     const other = large.get(t);
@@ -67,24 +67,40 @@ export function cosineSim(a: Map<string, number>, b: Map<string, number>): numbe
  * If fewer than 2 submissions exist, similarity is 0.
  */
 export async function computeTextSimilarity(submissionId: string): Promise<SimilarityResult> {
-  const submission = await db.submission.findUnique({
-    where: { id: submissionId },
-    include: { assignment: true },
-  });
-  if (!submission) return { similarity: 0, matchedSubmissionId: null };
+  const supabase = await createSupabaseServerClient();
 
-  const myText = submission.mediaExtractedText || submission.content || "";
-  if (!myText.trim()) return { similarity: 0, matchedSubmissionId: null };
+  // Fetch the target submission + its assignment
+  const { data: submission, error: subErr } = await supabase
+    .from("submissions")
+    .select("id, assignment_id, content, media_extracted_text")
+    .eq("id", submissionId)
+    .maybeSingle();
 
-  const others = await db.submission.findMany({
-    where: {
-      assignmentId: submission.assignmentId,
-      id: { not: submissionId },
-    },
-    include: { user: true },
-  });
+  if (subErr || !submission) return { similarity: 0, matchedSubmissionId: null, provider: "MOCK" };
 
-  if (others.length === 0) return { similarity: 0, matchedSubmissionId: null };
+  const myText = (submission.media_extracted_text || submission.content || "").toString();
+  if (!myText.trim()) return { similarity: 0, matchedSubmissionId: null, provider: "MOCK" };
+
+  // Fetch sibling submissions in the same assignment — RLS ensures the
+  // faculty/coordinator can see them; a student will get an empty set
+  // (RLS hides other students' submissions from peers), which means
+  // similarity will be 0 for student-initiated runs. The faculty
+  // "Run AI Analysis" button is the primary entry point.
+  const { data: others, error: sibErr } = await supabase
+    .from("submissions")
+    .select(`
+      id,
+      content,
+      media_extracted_text,
+      user_id,
+      profiles:user_id ( name )
+    `)
+    .eq("assignment_id", submission.assignment_id)
+    .neq("id", submissionId);
+
+  if (sibErr || !others || others.length === 0) {
+    return { similarity: 0, matchedSubmissionId: null, provider: "MOCK" };
+  }
 
   const myTokens = tokenize(myText);
   const myVec = tfVector(myTokens);
@@ -93,14 +109,15 @@ export async function computeTextSimilarity(submissionId: string): Promise<Simil
   let bestId: string | null = null;
   let bestName: string | undefined;
   for (const other of others) {
-    const otherText = other.mediaExtractedText || other.content || "";
+    const otherText = (other.media_extracted_text || other.content || "").toString();
     if (!otherText.trim()) continue;
     const otherVec = tfVector(tokenize(otherText));
     const sim = cosineSim(myVec, otherVec);
     if (sim > bestSim) {
       bestSim = sim;
-      bestId = other.id;
-      bestName = other.user.name;
+      bestId = other.id as string;
+      const profile = other.profiles as any;
+      bestName = profile?.name as string | undefined;
     }
   }
 
@@ -108,5 +125,6 @@ export async function computeTextSimilarity(submissionId: string): Promise<Simil
     similarity: parseFloat((bestSim * 100).toFixed(1)),
     matchedSubmissionId: bestId,
     matchedStudentName: bestName,
+    provider: bestSim > 0 ? "ZAI_COSINE" : "MOCK",
   };
 }

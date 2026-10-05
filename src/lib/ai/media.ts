@@ -7,11 +7,12 @@
 // (similarity / scoring / feedback) can degrade gracefully.
 //
 // z-ai-web-dev-sdk is server-side only — never import this file from a 'use client' module.
+// Fully Supabase-backed — uses the server client (subject to RLS).
 
 import ZAI from "z-ai-web-dev-sdk";
 import { promises as fs } from "node:fs";
 import { isImageType, isAudioType, isVideoType, getLocalPath, BUCKETS } from "@/lib/storage";
-import { db } from "@/lib/db";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 let _zai: any = null;
 async function getZAI() {
@@ -27,8 +28,10 @@ export interface ExtractedMedia {
 /**
  * Get the existing text content of a submission without re-extracting.
  * - For TEXT type: returns submission.content
- * - For media type: returns the cached mediaExtractedText on SimilarityReport
+ * - For media type: returns the cached media_extracted_text on similarity_reports
  *   (if extraction has run before) — empty string otherwise.
+ *
+ * Accepts an optional pre-fetched submission object to avoid a duplicate query.
  */
 export async function getSubmissionContentText(
   submissionId: string,
@@ -36,20 +39,34 @@ export async function getSubmissionContentText(
 ): Promise<string> {
   let sub = submission;
   if (!sub) {
-    sub = await db.submission.findUnique({
-      where: { id: submissionId },
-      include: { similarityReports: { take: 1, orderBy: { createdAt: "desc" } } },
-    });
+    const supabase = await createSupabaseServerClient();
+    // Fetch the submission + its latest similarity_report (which may cache the extracted text)
+    const { data } = await supabase
+      .from("submissions")
+      .select(`
+        id, content, media_extracted_text,
+        similarity_reports ( media_extracted_text, created_at )
+      `)
+      .eq("id", submissionId)
+      .maybeSingle();
+    sub = data;
   }
   if (!sub) return "";
-  // For TEXT type, just return the content.
+
+  // For TEXT type, return content directly
   if (sub.content && sub.content.trim().length > 0) return sub.content;
-  // For media, return any cached extracted text on the latest SimilarityReport.
-  if (sub.similarityReports?.[0]?.mediaExtractedText) {
-    return sub.similarityReports[0].mediaExtractedText;
+
+  // For media, return cached extracted text on the latest similarity_report
+  if (Array.isArray(sub.similarity_reports) && sub.similarity_reports.length > 0) {
+    const latest = sub.similarity_reports
+      .slice()
+      .sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())[0];
+    if (latest?.media_extracted_text) return latest.media_extracted_text;
   }
-  // Or on the submission row itself.
-  if (sub.mediaExtractedText) return sub.mediaExtractedText;
+
+  // Or on the submission row itself
+  if (sub.media_extracted_text) return sub.media_extracted_text;
+
   return "";
 }
 
@@ -63,12 +80,18 @@ export async function extractMediaContent(
   submissionId: string
 ): Promise<ExtractedMedia> {
   try {
-    const sub = await db.submission.findUnique({ where: { id: submissionId } });
-    if (!sub || !sub.storagePath) return { text: "", provider: "" };
-    const mime = sub.mimeType || sub.fileType || "";
+    const supabase = await createSupabaseServerClient();
+    const { data: sub, error } = await supabase
+      .from("submissions")
+      .select("id, storage_path, mime_type, file_type")
+      .eq("id", submissionId)
+      .maybeSingle();
+
+    if (error || !sub || !sub.storage_path) return { text: "", provider: "" };
+    const mime = sub.mime_type || sub.file_type || "";
     if (!mime) return { text: "", provider: "" };
 
-    const localPath = getLocalPath(BUCKETS.submissions, sub.storagePath);
+    const localPath = getLocalPath(BUCKETS.submissions, sub.storage_path);
 
     if (isImageType(mime)) {
       const text = await describeImage(localPath, mime);

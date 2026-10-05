@@ -1,4 +1,4 @@
-// /api/evaluations — POST handler.
+// /api/evaluations — POST handler (Supabase-backed).
 //
 // Adds a notification trigger (Feature 4): when faculty submits a faculty
 // (non-peer) evaluation, the submission's student gets a RESULT_PUBLISHED
@@ -6,12 +6,14 @@
 //
 // Resubmission semantics are unchanged: faculty can re-score an existing
 // evaluation row by POSTing the same submissionId+criterionId+evaluatorId
-// tuple (Prisma @@unique constraint triggers update).
+// tuple — we look it up and UPDATE instead of INSERT (the Supabase UNIQUE
+// constraint on (submission_id, evaluator_id, criterion_id) mirrors the
+// old Prisma @@unique).
 
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { db } from "@/lib/db";
+import { createSupabaseAdminClient } from "@/lib/supabase/server";
 import { requireRole } from "@/lib/rls";
 import { notify, NOTIF_TYPES } from "@/lib/notifications";
 
@@ -43,40 +45,70 @@ export async function POST(req: Request) {
     if (!r.ok) return r.response;
   }
 
+  const supabase = createSupabaseAdminClient();
+
   if (isPeer) {
     // Peer review: student cannot review their own submission.
-    const sub = await db.submission.findUnique({ where: { id: submissionId } });
-    if (sub?.userId === session.user.id) {
+    const { data: sub } = await supabase
+      .from("submissions")
+      .select("id, user_id")
+      .eq("id", submissionId)
+      .maybeSingle();
+    if (sub?.user_id === session.user.id) {
       return NextResponse.json({ error: "Cannot review your own submission" }, { status: 400 });
     }
-    const existing = await db.peerReview.findUnique({
-      where: {
-        submissionId_reviewerId_criterionId: {
-          submissionId,
-          reviewerId: session.user.id,
-          criterionId,
-        },
-      },
-    });
-    let pr;
-    if (existing) {
-      pr = await db.peerReview.update({
-        where: { id: existing.id },
-        data: { score, comment },
-      });
+
+    // Look for an existing peer_review with the same (submission_id, reviewer_id, criterion_id).
+    const { data: existing } = await supabase
+      .from("peer_reviews")
+      .select("id")
+      .eq("submission_id", submissionId)
+      .eq("reviewer_id", session.user.id)
+      .eq("criterion_id", criterionId)
+      .maybeSingle();
+
+    let pr: any;
+    if (existing?.id) {
+      const { data: updated, error } = await supabase
+        .from("peer_reviews")
+        .update({ score, comment: comment ?? null })
+        .eq("id", existing.id)
+        .select()
+        .single();
+      if (error) {
+        return NextResponse.json({ error: error.message }, { status: 500 });
+      }
+      pr = updated;
     } else {
-      pr = await db.peerReview.create({
-        data: { submissionId, reviewerId: session.user.id, criterionId, score, comment },
-      });
+      const { data: inserted, error } = await supabase
+        .from("peer_reviews")
+        .insert({
+          submission_id: submissionId,
+          reviewer_id: session.user.id,
+          criterion_id: criterionId,
+          score,
+          comment: comment ?? null,
+        })
+        .select()
+        .single();
+      if (error) {
+        return NextResponse.json({ error: error.message }, { status: 500 });
+      }
+      pr = inserted;
+
       // Notify the submission's owner they've been peer-reviewed.
       try {
-        const submission = await db.submission.findUnique({
-          where: { id: submissionId },
-          include: { assignment: true, user: true },
-        });
-        if (submission && submission.userId !== session.user.id) {
+        const { data: submission } = await supabase
+          .from("submissions")
+          .select(`
+            user_id,
+            assignment:assignments (id, title)
+          `)
+          .eq("id", submissionId)
+          .maybeSingle();
+        if (submission && submission.user_id !== session.user.id) {
           await notify(
-            submission.userId,
+            submission.user_id,
             NOTIF_TYPES.PEER_REVIEW_ASSIGNED,
             `Peer review received: ${submission.assignment?.title ?? "your submission"}`,
             `A peer reviewed your submission.`,
@@ -90,37 +122,62 @@ export async function POST(req: Request) {
     return NextResponse.json({ peerReview: pr });
   }
 
-  // Faculty evaluation.
-  const existing = await db.evaluation.findUnique({
-    where: {
-      submissionId_evaluatorId_criterionId: {
-        submissionId,
-        evaluatorId: session.user.id,
-        criterionId,
-      },
-    },
-  });
-  let ev;
-  if (existing) {
-    ev = await db.evaluation.update({
-      where: { id: existing.id },
-      data: { score, comment },
-    });
+  // Faculty evaluation — look for an existing row to update.
+  const { data: existing } = await supabase
+    .from("evaluations")
+    .select("id")
+    .eq("submission_id", submissionId)
+    .eq("evaluator_id", session.user.id)
+    .eq("criterion_id", criterionId)
+    .maybeSingle();
+
+  let ev: any;
+  if (existing?.id) {
+    const { data: updated, error } = await supabase
+      .from("evaluations")
+      .update({ score, comment: comment ?? null })
+      .eq("id", existing.id)
+      .select()
+      .single();
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+    ev = updated;
   } else {
-    ev = await db.evaluation.create({
-      data: { submissionId, evaluatorId: session.user.id, criterionId, score, comment, isPeer: false },
-    });
+    const { data: inserted, error } = await supabase
+      .from("evaluations")
+      .insert({
+        submission_id: submissionId,
+        evaluator_id: session.user.id,
+        criterion_id: criterionId,
+        score,
+        comment: comment ?? null,
+        is_peer: false,
+      })
+      .select()
+      .single();
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+    ev = inserted;
   }
 
   // Notify the student that a result was published.
   try {
-    const submission = await db.submission.findUnique({
-      where: { id: submissionId },
-      include: { assignment: true, user: true, evaluations: { where: { isPeer: false }, include: { criterion: true } } },
-    });
-    if (submission && submission.userId !== session.user.id) {
+    const { data: submission } = await supabase
+      .from("submissions")
+      .select(`
+        user_id,
+        assignment:assignments (id, title),
+        evaluations:evaluations (
+          id, score, comment, criterion_id, criterion:rubric_criteria (id, name, weight, max_score)
+        )
+      `)
+      .eq("id", submissionId)
+      .maybeSingle();
+    if (submission && submission.user_id !== session.user.id) {
       await notify(
-        submission.userId,
+        submission.user_id,
         NOTIF_TYPES.RESULT_PUBLISHED,
         `Result published: ${submission.assignment?.title ?? "your submission"}`,
         `${session.user.name ?? "Faculty"} scored your submission. Open "My Submissions" to view.`,

@@ -1,4 +1,4 @@
-// /api/submissions — POST + GET handlers.
+// /api/submissions — POST + GET handlers (Supabase-backed).
 //
 // POST is refactored (Feature 2) to accept multipart/form-data so the
 // student form can upload real files. Supports two submit modes:
@@ -8,8 +8,7 @@
 //             storage layer; we record storagePath + mimeType + fileSize.
 //
 // Resubmission logic: if a submission already exists for this user+assignment
-// AND the deadline hasn't passed, we UPDATE the existing row (simpler than
-// delete+recreate — preserves peer-review / evaluation references). For a
+// AND the deadline hasn't passed, we UPDATE the existing row. For a
 // resubmission with a file, the old file is deleted from storage first.
 //
 // After creating/updating the submission we kick off AI analysis inline
@@ -24,8 +23,8 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { db } from "@/lib/db";
-import { computeFinalScore } from "@/lib/queries";
+import { createSupabaseAdminClient } from "@/lib/supabase/server";
+import { camelize, computeFinalScore } from "@/lib/queries";
 import { requireRole } from "@/lib/rls";
 import { deleteFile, uploadFile } from "@/lib/storage";
 import { notify, NOTIF_TYPES } from "@/lib/notifications";
@@ -70,25 +69,46 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Missing assignmentId" }, { status: 400 });
   }
 
+  const supabase = createSupabaseAdminClient();
+
   // Fetch assignment + verify the student is enrolled in its course.
-  const assignment = await db.assignment.findUnique({
-    where: { id: assignmentId },
-    include: { course: { include: { enrollments: true, faculty: true } } },
-  });
+  const { data: assignment } = await supabase
+    .from("assignments")
+    .select(`
+      id,
+      title,
+      description,
+      type,
+      deadline,
+      course_id,
+      course:courses (
+        id,
+        code,
+        name,
+        faculty_id,
+        enrollments:enrollments (id, user_id, course_id),
+        faculty:profiles!courses_faculty_id_fkey (id, name, email)
+      )
+    `)
+    .eq("id", assignmentId)
+    .single();
+
   if (!assignment) {
     return NextResponse.json({ error: "Assignment not found" }, { status: 404 });
   }
-  const enrolled = assignment.course.enrollments.some((e) => e.userId === userId);
+  const enrolled = (assignment.course?.enrollments ?? []).some(
+    (e: any) => e.user_id === userId
+  );
   if (!enrolled) {
     return NextResponse.json({ error: "You are not enrolled in this course" }, { status: 403 });
   }
 
   // Deadline check.
   const now = new Date();
-  const deadlinePassed = assignment.deadline.getTime() < now.getTime();
+  const deadlinePassed = new Date(assignment.deadline).getTime() < now.getTime();
 
   // Pull fields based on submission type.
-  const type = assignment.type.toUpperCase();
+  const type = (assignment.type as string).toUpperCase();
   let content: string | null = null;
   let storagePath: string | null = null;
   let mimeType: string | null = null;
@@ -122,7 +142,7 @@ export async function POST(req: Request) {
     if (!accept.has(mime)) {
       return NextResponse.json({ error: `File type ${mime} not allowed for ${type} assignment` }, { status: 400 });
     }
-    // Save via storage layer.
+    // Save via local storage layer (Supabase-style abstraction).
     const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
     const relPath = `${userId}/${Date.now()}-${safeName}`;
     try {
@@ -138,63 +158,77 @@ export async function POST(req: Request) {
   }
 
   // Existing submission check — resubmit path.
-  const existing = await db.submission.findFirst({
-    where: { assignmentId, userId },
-  });
+  const { data: existing } = await supabase
+    .from("submissions")
+    .select("id, storage_path")
+    .eq("assignment_id", assignmentId)
+    .eq("user_id", userId)
+    .maybeSingle();
 
-  let submission;
+  const fileUrl = storagePath ? `/api/storage/submissions/${storagePath}` : null;
+  const payload: Record<string, unknown> = {
+    content,
+    storage_path: storagePath,
+    mime_type: mimeType,
+    file_size: fileSize,
+    file_name: fileName,
+    file_url: fileUrl,
+    file_type: mimeType,
+    status: deadlinePassed ? "LATE" : "SUBMITTED",
+    submitted_at: now.toISOString(),
+  };
+
+  let submissionRow: any = null;
   if (existing) {
-    // Resubmit: deadline must not have passed (override allowed only for
-    // late-submissions flag — but here we just enforce it).
+    // Resubmit: deadline must not have passed.
     if (deadlinePassed) {
       // If we already uploaded a new file, clean it up since we're rejecting.
       if (storagePath) await deleteFile("submissions", storagePath).catch(() => {});
       return NextResponse.json({ error: "Deadline has passed; resubmission closed" }, { status: 409 });
     }
-    // If a previous file existed, delete it.
-    if (existing.storagePath) {
-      await deleteFile("submissions", existing.storagePath).catch(() => {});
+    // If a previous file existed, delete it from storage.
+    if (existing.storage_path) {
+      await deleteFile("submissions", existing.storage_path).catch(() => {});
     }
-    submission = await db.submission.update({
-      where: { id: existing.id },
-      data: {
-        content,
-        storagePath,
-        mimeType,
-        fileSize,
-        fileName,
-        // legacy fields kept in sync so older UI bits don't break
-        fileUrl: storagePath ? `/api/storage/submissions/${storagePath}` : null,
-        fileType: mimeType,
-        status: "SUBMITTED",
-        submittedAt: now,
-      },
-    });
+    const { data: updated, error: uErr } = await supabase
+      .from("submissions")
+      .update(payload)
+      .eq("id", existing.id)
+      .select()
+      .single();
+    if (uErr || !updated) {
+      console.error("[submissions POST] update failed:", uErr?.message);
+      return NextResponse.json({ error: uErr?.message ?? "Failed to update submission" }, { status: 500 });
+    }
+    submissionRow = updated;
     // Wipe stale AI reports since the submission content changed.
-    await db.similarityReport.deleteMany({ where: { submissionId: submission.id } });
+    await supabase.from("similarity_reports").delete().eq("submission_id", submissionRow.id);
   } else {
-    submission = await db.submission.create({
-      data: {
-        assignmentId,
-        userId,
-        content,
-        storagePath,
-        mimeType,
-        fileSize,
-        fileName,
-        fileUrl: storagePath ? `/api/storage/submissions/${storagePath}` : null,
-        fileType: mimeType,
-        status: deadlinePassed ? "LATE" : "SUBMITTED",
-      },
-    });
+    const insertPayload: Record<string, unknown> = {
+      assignment_id: assignmentId,
+      user_id: userId,
+      ...payload,
+    };
+    const { data: inserted, error: iErr } = await supabase
+      .from("submissions")
+      .insert(insertPayload)
+      .select()
+      .single();
+    if (iErr || !inserted) {
+      console.error("[submissions POST] insert failed:", iErr?.message);
+      return NextResponse.json({ error: iErr?.message ?? "Failed to create submission" }, { status: 500 });
+    }
+    submissionRow = inserted;
   }
 
+  const submissionId = submissionRow.id;
+
   // Kick off AI analysis inline. Wrap in try/catch — submission succeeded
-  // even if AI fails (mock fallback will still produce a SimilarityReport).
+  // even if AI fails (mock fallback will still produce a similarity_report).
   let aiProvider = "MOCK";
   try {
     const aiRes = await fetch(
-      `${req.nextUrl?.origin ?? "http://localhost:3000"}/api/ai-simulate?submissionId=${submission.id}`,
+      `${req.nextUrl?.origin ?? "http://localhost:3000"}/api/ai-simulate?submissionId=${submissionId}`,
       {
         method: "POST",
         headers: {
@@ -210,22 +244,20 @@ export async function POST(req: Request) {
     console.error("[submissions POST] inline AI failed (non-fatal):", err);
     // Fallback: write a placeholder report so the UI shows *something*.
     try {
-      await db.similarityReport.create({
-        data: {
-          submissionId: submission.id,
-          similarity: 12,
-          autoScore: 0,
-          feedbackText: "AI analysis pending — faculty evaluation will refine the score.",
-          provider: "MOCK",
-        },
+      await supabase.from("similarity_reports").insert({
+        submission_id: submissionId,
+        similarity: 12,
+        auto_score: 0,
+        feedback_text: "AI analysis pending — faculty evaluation will refine the score.",
+        provider: "MOCK",
       });
     } catch {}
   }
 
   // Notify the faculty member of the course that a new submission arrived.
   try {
-    const faculty = assignment.course.faculty;
-    if (faculty) {
+    const faculty = (assignment.course as any)?.faculty;
+    if (faculty?.id) {
       await notify(
         faculty.id,
         NOTIF_TYPES.AI_ANALYSIS_READY, // reuse for "submission arrived"
@@ -238,7 +270,7 @@ export async function POST(req: Request) {
     console.error("[submissions POST] notify faculty failed:", err);
   }
 
-  return NextResponse.json({ submission, aiProvider });
+  return NextResponse.json({ submission: camelize(submissionRow), aiProvider });
 }
 
 // GET — list the current user's submissions, optionally for one assignment.
@@ -246,28 +278,66 @@ export async function GET(req: Request) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
+  const supabase = createSupabaseAdminClient();
   const { searchParams } = new URL(req.url);
   const assignmentId = searchParams.get("assignmentId");
+
   if (assignmentId) {
-    const sub = await db.submission.findFirst({
-      where: { assignmentId, userId: session.user.id },
-      include: {
-        similarityReports: true,
-        feedback: { include: { author: true } },
-        evaluations: { include: { criterion: true } },
-        peerReviews: { include: { criterion: true } },
-        assignment: true,
-      },
-    });
+    const { data: sub } = await supabase
+      .from("submissions")
+      .select(`
+        id,
+        assignment_id,
+        user_id,
+        content,
+        storage_path,
+        mime_type,
+        file_size,
+        file_name,
+        file_url,
+        file_type,
+        status,
+        submitted_at,
+        media_extracted_text,
+        assignment:assignments (id, title, description, type, deadline, course_id, competency_id, created_at),
+        similarityReports:similarity_reports (
+          id, submission_id, compared_to_submission_id, similarity, auto_score,
+          feedback_text, media_extracted_text, criteria_reasoning, confidence, provider, created_at
+        ),
+        feedback:feedback (id, text, created_at, author_id, recipient_id, source, submission_id, author:profiles!feedback_author_id_fkey (id, name, email)),
+        evaluations:evaluations (id, submission_id, evaluator_id, criterion_id, score, comment, is_peer, created_at, criterion:rubric_criteria (id, name, weight, max_score, rubric_id, description)),
+        peerReviews:peer_reviews (id, submission_id, reviewer_id, criterion_id, score, comment, created_at, criterion:rubric_criteria (id, name, weight, max_score, rubric_id, description))
+      `)
+      .eq("assignment_id", assignmentId)
+      .eq("user_id", session.user.id)
+      .maybeSingle();
+
     if (!sub) return NextResponse.json({ submission: null });
     const scores = await computeFinalScore(sub.id);
-    return NextResponse.json({ submission: { ...sub, scores } });
+    return NextResponse.json({ submission: { ...camelize(sub), scores } });
   }
 
-  const subs = await db.submission.findMany({
-    where: { userId: session.user.id },
-    include: { assignment: true, similarityReports: true },
-    orderBy: { submittedAt: "desc" },
-  });
-  return NextResponse.json({ submissions: subs });
+  const { data: subs } = await supabase
+    .from("submissions")
+    .select(`
+      id,
+      assignment_id,
+      user_id,
+      content,
+      storage_path,
+      mime_type,
+      file_size,
+      file_name,
+      file_url,
+      file_type,
+      status,
+      submitted_at,
+      media_extracted_text,
+      assignment:assignments (id, title, description, type, deadline, course_id, competency_id, created_at),
+      similarityReports:similarity_reports (id, submission_id, compared_to_submission_id, similarity, auto_score, feedback_text, media_extracted_text, criteria_reasoning, confidence, provider, created_at)
+    `)
+    .eq("user_id", session.user.id)
+    .order("submitted_at", { ascending: false });
+
+  return NextResponse.json({ submissions: camelize(subs ?? []) });
 }

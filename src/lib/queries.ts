@@ -1,16 +1,46 @@
-// Centralized Prisma queries + AI simulation logic
-import { db } from "@/lib/db";
+// Centralized Supabase queries + AI simulation logic.
+//
+// Migrated from Prisma+SQLite → real Supabase (live project).
+// All function signatures + return shapes preserved exactly so the
+// dashboards don't need to change.
+//
+// We use createSupabaseAdminClient() for all reads/writes — this
+// bypasses RLS, which is acceptable because the API routes already
+// enforce auth/role at the NextAuth layer (see src/lib/rls.ts).
+// RLS in Supabase is a defense-in-depth backstop, not the primary
+// auth boundary here.
+
+import { createSupabaseAdminClient } from "@/lib/supabase/server";
 import { createHash } from "crypto";
-import { totalStorageStats } from "@/lib/storage";
+import { getBucketStats, BUCKETS } from "@/lib/storage";
 
 // ─────────────────────────────────────────────────────────
-// AI SIMULATION (rule-based, no real ML)
+// camelCase helper — Supabase returns snake_case columns, but the
+// dashboards expect Prisma-style camelCase (e.g. `assignmentId`,
+// `submittedAt`, `criterion.maxScore`). Recursively convert.
+// ─────────────────────────────────────────────────────────
+function toCamelKey(key: string): string {
+  return key.replace(/_([a-z0-9])/g, (_, c) => c.toUpperCase());
+}
+
+export function camelize<T>(obj: T): T {
+  if (obj === null || obj === undefined) return obj;
+  if (obj instanceof Date) return obj;
+  if (Array.isArray(obj)) return obj.map(camelize) as unknown as T;
+  if (typeof obj === "object" && !(obj instanceof Buffer)) {
+    const out: Record<string, unknown> = {};
+    for (const k of Object.keys(obj as Record<string, unknown>)) {
+      out[toCamelKey(k)] = camelize((obj as Record<string, unknown>)[k]);
+    }
+    return out as T;
+  }
+  return obj;
+}
+
+// ─────────────────────────────────────────────────────────
+// AI SIMULATION (rule-based, kept as mock fallbacks)
 // ─────────────────────────────────────────────────────────
 
-/**
- * Deterministic pseudo-random based on string seed.
- * Returns 0-1. Same input → same output.
- */
 function seeded(seed: string, max = 1): number {
   const h = createHash("md5").update(seed).digest().readUInt32LE(0);
   return (h / 0xffffffff) * max;
@@ -50,17 +80,15 @@ function feedbackForScore(score: number, seed: string): string {
 }
 
 /**
- * Compute similarity % between a submission and the rest of the class.
- * Mock logic: deterministic, seeded by submission ID.
+ * Deterministic mock similarity % for fallback (12-78%).
  */
 export function computeSimilarity(submissionId: string): number {
-  // Returns 12-78% — high enough to feel realistic, never 100% (which would mean plagiarism)
   return parseFloat((12 + seeded(submissionId + "-sim", 66)).toFixed(1));
 }
 
 /**
  * Compute auto-score suggestion based on rubric criteria weighted average.
- * This mirrors how faculty score would aggregate, but with ±5% noise to feel "AI".
+ * Mirrors how faculty score would aggregate, with ±5% noise to feel "AI".
  */
 export function computeAutoScore(
   criteriaScores: { score: number; max: number; weight: number }[]
@@ -70,10 +98,12 @@ export function computeAutoScore(
     (acc, cs) => acc + (cs.score / cs.max) * cs.weight,
     0
   );
-  // Add small noise so AI suggestion differs slightly from actual faculty score
   const noise = (seeded(JSON.stringify(criteriaScores), 1) - 0.5) * 6;
   return Math.max(0, Math.min(100, parseFloat((weighted * 100 + noise).toFixed(1))));
 }
+
+// Re-export the feedback template picker (used by ai/feedback.ts as fallback).
+export { feedbackForScore };
 
 // ─────────────────────────────────────────────────────────
 // SCORING HELPERS
@@ -89,51 +119,88 @@ export async function computeFinalScore(submissionId: string): Promise<{
   finalScore: number | null;
   criteriaBreakdown: { name: string; facultyScore: number | null; peerScore: number | null; weight: number; finalScore: number | null }[];
 }> {
-  const [facultyEvals, peerReviews, criteria] = await Promise.all([
-    db.evaluation.findMany({
-      where: { submissionId, isPeer: false },
-      include: { criterion: true },
-    }),
-    db.peerReview.findMany({
-      where: { submissionId },
-      include: { criterion: true },
-    }),
-    db.rubricCriterion.findMany({
-      where: { rubric: { assignmentId: (await db.submission.findUnique({ where: { id: submissionId } }))?.assignmentId } },
-    }),
-  ]);
+  const supabase = createSupabaseAdminClient();
+
+  // Fetch the submission to find its assignment_id.
+  const { data: submission } = await supabase
+    .from("submissions")
+    .select("id, assignment_id")
+    .eq("id", submissionId)
+    .single();
+
+  if (!submission) {
+    return { facultyScore: null, peerScore: null, finalScore: null, criteriaBreakdown: [] };
+  }
+
+  // Fetch rubric + criteria for the assignment.
+  const { data: rubric } = await supabase
+    .from("rubrics")
+    .select("id, assignment_id")
+    .eq("assignment_id", submission.assignment_id)
+    .single();
+  let criteria: { id: string; name: string; weight: number; max_score: number }[] = [];
+  if (rubric) {
+    const { data: criteriaRows } = await supabase
+      .from("rubric_criteria")
+      .select("id, name, weight, max_score")
+      .eq("rubric_id", rubric.id);
+    criteria = criteriaRows ?? [];
+  }
 
   if (!criteria.length) {
     return { facultyScore: null, peerScore: null, finalScore: null, criteriaBreakdown: [] };
   }
 
+  // Fetch faculty evaluations (is_peer=false) + peer reviews for this submission.
+  const [facultyEvalsRes, peerReviewsRes] = await Promise.all([
+    supabase
+      .from("evaluations")
+      .select("criterion_id, score")
+      .eq("submission_id", submissionId)
+      .eq("is_peer", false),
+    supabase
+      .from("peer_reviews")
+      .select("criterion_id, score")
+      .eq("submission_id", submissionId),
+  ]);
+
+  const facultyEvals = (facultyEvalsRes.data ?? []) as { criterion_id: string; score: number }[];
+  const peerReviews = (peerReviewsRes.data ?? []) as { criterion_id: string; score: number }[];
+
   const facultyByCrit: Record<string, number[]> = {};
   const peerByCrit: Record<string, number[]> = {};
   for (const e of facultyEvals) {
-    if (!facultyByCrit[e.criterionId]) facultyByCrit[e.criterionId] = [];
-    facultyByCrit[e.criterionId].push(e.score);
+    if (!facultyByCrit[e.criterion_id]) facultyByCrit[e.criterion_id] = [];
+    facultyByCrit[e.criterion_id].push(e.score);
   }
   for (const p of peerReviews) {
-    if (!peerByCrit[p.criterionId]) peerByCrit[p.criterionId] = [];
-    peerByCrit[p.criterionId].push(p.score);
+    if (!peerByCrit[p.criterion_id]) peerByCrit[p.criterion_id] = [];
+    peerByCrit[p.criterion_id].push(p.score);
   }
 
   let facultyTotal = 0;
   let peerTotal = 0;
   let finalTotal = 0;
   const breakdown = criteria.map((c) => {
-    const facAvg = facultyByCrit[c.id]?.length ? facultyByCrit[c.id].reduce((a, b) => a + b, 0) / facultyByCrit[c.id].length : null;
-    const peerAvg = peerByCrit[c.id]?.length ? peerByCrit[c.id].reduce((a, b) => a + b, 0) / peerByCrit[c.id].length : null;
-    const facPct = facAvg !== null ? (facAvg / c.maxScore) * 100 : null;
-    const peerPct = peerAvg !== null ? (peerAvg / c.maxScore) * 100 : null;
-    const critFinal = facPct !== null && peerPct !== null ? facPct * 0.7 + peerPct * 0.3 : (facPct ?? peerPct);
+    const facAvg = facultyByCrit[c.id]?.length
+      ? facultyByCrit[c.id].reduce((a, b) => a + b, 0) / facultyByCrit[c.id].length
+      : null;
+    const peerAvg = peerByCrit[c.id]?.length
+      ? peerByCrit[c.id].reduce((a, b) => a + b, 0) / peerByCrit[c.id].length
+      : null;
+    const facPct = facAvg !== null ? (facAvg / c.max_score) * 100 : null;
+    const peerPct = peerAvg !== null ? (peerAvg / c.max_score) * 100 : null;
+    const critFinal =
+      facPct !== null && peerPct !== null
+        ? facPct * 0.7 + peerPct * 0.3
+        : facPct ?? peerPct;
     if (facPct !== null) facultyTotal += facPct * c.weight;
     if (peerPct !== null) peerTotal += peerPct * c.weight;
     if (critFinal !== null) finalTotal += critFinal * c.weight;
     return {
       name: c.name,
-      facultyScore: facPct ? parseFloat(facPct.toFixed(1)) : null,
-      peerScore: peerPct ? parseFloat(peerPct.toFixed(1)) : null,
+      facultyScore: facPct !== null ? parseFloat(facPct.toFixed(1)) : null,
+      peerScore: peerPct !== null ? parseFloat(peerPct.toFixed(1)) : null,
       weight: c.weight,
       finalScore: critFinal !== null ? parseFloat(critFinal.toFixed(1)) : null,
     };
@@ -152,9 +219,16 @@ export async function computeFinalScore(submissionId: string): Promise<{
 // ─────────────────────────────────────────────────────────
 
 export async function getStudentDashboard(userId: string) {
-  // Get the user record directly
-  const userRecord = await db.user.findUnique({ where: { id: userId } });
-  if (!userRecord) {
+  const supabase = createSupabaseAdminClient();
+
+  // Fetch the user's profile.
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("id, email, name")
+    .eq("id", userId)
+    .single();
+
+  if (!profile) {
     return {
       student: { id: userId, name: "", email: "" },
       learningCurve: [],
@@ -167,22 +241,68 @@ export async function getStudentDashboard(userId: string) {
     };
   }
 
-  // Get student's submissions with assignment + scores
-  const submissions = await db.submission.findMany({
-    where: { userId },
-    include: {
-      assignment: { include: { competency: true, course: true } },
-      evaluations: { include: { criterion: true } },
-      peerReviews: { include: { criterion: true } },
-      similarityReports: true,
-      feedback: { include: { author: true } },
-    },
-    orderBy: { submittedAt: "asc" },
-  });
+  // Fetch this student's submissions + their assignment (with course + competency).
+  const { data: submissionsRaw } = await supabase
+    .from("submissions")
+    .select(`
+      id,
+      assignment_id,
+      user_id,
+      content,
+      storage_path,
+      mime_type,
+      file_size,
+      file_name,
+      file_url,
+      file_type,
+      status,
+      submitted_at,
+      assignment:assignments (
+        id,
+        title,
+        description,
+        type,
+        deadline,
+        course_id,
+        competency_id,
+        course:courses (id, code, name),
+        competency:competencies (id, code, name, type)
+      )
+    `)
+    .eq("user_id", userId)
+    .order("submitted_at", { ascending: true });
+
+  type SubmissionRow = {
+    id: string;
+    assignment_id: string;
+    user_id: string;
+    content: string | null;
+    storage_path: string | null;
+    mime_type: string | null;
+    file_size: number | null;
+    file_name: string | null;
+    file_url: string | null;
+    file_type: string | null;
+    status: string;
+    submitted_at: string;
+    assignment: {
+      id: string;
+      title: string;
+      description: string | null;
+      type: string;
+      deadline: string;
+      course_id: string;
+      competency_id: string | null;
+      course: { id: string; code: string; name: string } | null;
+      competency: { id: string; code: string; name: string; type: string } | null;
+    } | null;
+  };
+
+  const submissions = (submissionsRaw ?? []) as unknown as SubmissionRow[];
 
   if (!submissions.length) {
     return {
-      student: { id: userId, name: userRecord.name, email: userRecord.email },
+      student: { id: userId, name: profile.name, email: profile.email },
       learningCurve: [],
       classAverage: [],
       competencies: [],
@@ -193,81 +313,148 @@ export async function getStudentDashboard(userId: string) {
     };
   }
 
-  // Compute final scores for each submission
+  // Compute final scores for each submission.
   const submissionsWithScores = await Promise.all(
     submissions.map(async (s) => {
       const scores = await computeFinalScore(s.id);
-      return {
-        ...s,
-        scores,
-      };
+      return { ...s, scores };
     })
   );
 
-  // Learning curve: score per assignment over time
+  // Learning curve: score per assignment over time.
   const learningCurve = submissionsWithScores
     .filter((s) => s.scores.finalScore !== null)
     .map((s) => ({
-      assignmentTitle: s.assignment.title,
-      assignmentId: s.assignment.id,
-      score: s.scores.finalScore!,
-      submittedAt: s.submittedAt,
-      competencyCode: s.assignment.competency?.code ?? null,
+      assignmentTitle: s.assignment?.title ?? "Untitled",
+      assignmentId: s.assignment?.id ?? s.assignment_id,
+      score: s.scores.finalScore as number,
+      submittedAt: s.submitted_at,
+      competencyCode: s.assignment?.competency?.code ?? null,
     }));
 
-  // Class average for comparison
-  const courseIds = [...new Set(submissions.map((s) => s.assignment.courseId))];
-  const allCourseSubmissions = await db.submission.findMany({
-    where: { assignment: { courseId: { in: courseIds } } },
-    include: { assignment: true },
-  });
-  const classAvgByAssignment: Record<string, number[]> = {};
-  for (const s of allCourseSubmissions) {
-    const scores = await computeFinalScore(s.id);
-    if (scores.finalScore !== null) {
-      if (!classAvgByAssignment[s.assignmentId]) classAvgByAssignment[s.assignmentId] = [];
-      classAvgByAssignment[s.assignmentId].push(scores.finalScore);
+  // Class average: gather every submission in the same courses.
+  const courseIds = [
+    ...new Set(
+      submissions
+        .map((s) => s.assignment?.course_id)
+        .filter((x): x is string => Boolean(x))
+    ),
+  ];
+
+  const classAverage: {
+    assignmentId: string;
+    assignmentTitle: string;
+    avgScore: number;
+  }[] = [];
+  if (courseIds.length) {
+    const { data: allCourseSubs } = await supabase
+      .from("submissions")
+      .select("id, assignment_id, assignment:assignments (id, title, course_id)")
+      .in("assignment.course_id", courseIds);
+
+    const classAvgByAssignment: Record<string, number[]> = {};
+    for (const s of (allCourseSubs ?? []) as any[]) {
+      const scores = await computeFinalScore(s.id);
+      if (scores.finalScore !== null) {
+        const aid = s.assignment_id;
+        if (!classAvgByAssignment[aid]) classAvgByAssignment[aid] = [];
+        classAvgByAssignment[aid].push(scores.finalScore);
+      }
+    }
+    for (const [aid, scores] of Object.entries(classAvgByAssignment)) {
+      const matched = submissions.find(
+        (s) => s.assignment?.id === aid || s.assignment_id === aid
+      );
+      classAverage.push({
+        assignmentId: aid,
+        assignmentTitle: matched?.assignment?.title ?? aid,
+        avgScore: parseFloat(
+          (scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(1)
+        ),
+      });
     }
   }
-  const classAverage = Object.entries(classAvgByAssignment).map(([aid, scores]) => ({
-    assignmentId: aid,
-    assignmentTitle: submissionsWithScores.find((s) => s.assignment.id === aid)?.assignment.title ?? aid,
-    avgScore: parseFloat((scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(1)),
-  }));
 
-  // Weak competencies: averaged score per competency code < 60
+  // Weak competencies: averaged score per competency code < 60.
   const compScores: Record<string, number[]> = {};
   for (const s of submissionsWithScores) {
-    if (s.scores.finalScore !== null && s.assignment.competency?.code) {
-      if (!compScores[s.assignment.competency.code]) compScores[s.assignment.competency.code] = [];
-      compScores[s.assignment.competency.code].push(s.scores.finalScore);
+    if (s.scores.finalScore !== null && s.assignment?.competency?.code) {
+      const code = s.assignment.competency.code;
+      if (!compScores[code]) compScores[code] = [];
+      compScores[code].push(s.scores.finalScore);
     }
   }
-  const competencies = Object.entries(compScores).map(([code, scores]) => ({
-    code,
-    avgScore: parseFloat((scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(1)),
-    count: scores.length,
-    weak: scores.reduce((a, b) => a + b, 0) / scores.length < 60,
-  }));
+  const competencies = Object.entries(compScores).map(([code, scores]) => {
+    const avg = scores.reduce((a, b) => a + b, 0) / scores.length;
+    return {
+      code,
+      avgScore: parseFloat(avg.toFixed(1)),
+      count: scores.length,
+      weak: avg < 60,
+    };
+  });
 
-  // Recent feedback
-  const recentFeedback = submissionsWithScores
-    .flatMap((s) => s.feedback.map((f) => ({ ...f, assignmentTitle: s.assignment.title })))
-    .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+  // Recent feedback: gather feedback rows for this student's submissions.
+  const submissionIds = submissions.map((s) => s.id);
+  let feedbackRows: any[] = [];
+  if (submissionIds.length) {
+    const { data } = await supabase
+      .from("feedback")
+      .select(`
+        id,
+        text,
+        created_at,
+        author_id,
+        recipient_id,
+        submission_id,
+        source,
+        author:profiles!feedback_author_id_fkey (id, name)
+      `)
+      .in("submission_id", submissionIds);
+    feedbackRows = data ?? [];
+  }
+
+  const recentFeedback = feedbackRows
+    .map((f) => {
+      const sub = submissions.find((s) => s.id === f.submission_id);
+      return {
+        id: f.id,
+        text: f.text,
+        createdAt: f.created_at,
+        author: f.author ? { id: f.author.id, name: f.author.name } : null,
+        authorId: f.author_id,
+        recipientId: f.recipient_id,
+        source: f.source,
+        submissionId: f.submission_id,
+        assignmentTitle: sub?.assignment?.title ?? "Assignment",
+      };
+    })
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
     .slice(0, 5);
 
-  // Recent AI similarity reports
+  // Recent AI similarity reports for the student's submissions.
+  let aiReportRows: any[] = [];
+  if (submissionIds.length) {
+    const { data } = await supabase
+      .from("similarity_reports")
+      .select("id, submission_id, similarity, auto_score, feedback_text")
+      .in("submission_id", submissionIds);
+    aiReportRows = data ?? [];
+  }
   const aiReports = submissionsWithScores
-    .map((s) => ({
-      assignmentTitle: s.assignment.title,
-      similarity: s.similarityReports[0]?.similarity ?? null,
-      autoScore: s.similarityReports[0]?.autoScore ?? null,
-      feedbackText: s.similarityReports[0]?.feedbackText ?? null,
-    }))
+    .map((s) => {
+      const r = aiReportRows.find((row: any) => row.submission_id === s.id);
+      return {
+        assignmentTitle: s.assignment?.title ?? "Untitled",
+        similarity: r?.similarity ?? null,
+        autoScore: r?.auto_score ?? null,
+        feedbackText: r?.feedback_text ?? null,
+      };
+    })
     .filter((r) => r.similarity !== null);
 
   return {
-    student: { id: userId, name: userRecord.name, email: userRecord.email },
+    student: { id: userId, name: profile.name, email: profile.email },
     learningCurve,
     classAverage,
     competencies,
@@ -275,41 +462,105 @@ export async function getStudentDashboard(userId: string) {
     aiReports,
     submissionsCount: submissions.length,
     avgScore: learningCurve.length
-      ? parseFloat((learningCurve.reduce((a, b) => a + b.score, 0) / learningCurve.length).toFixed(1))
+      ? parseFloat(
+          (learningCurve.reduce((a, b) => a + b.score, 0) / learningCurve.length).toFixed(1)
+        )
       : 0,
   };
 }
 
 export async function getFacultyDashboard(userId: string) {
-  const courses = await db.course.findMany({
-    where: { facultyId: userId },
-    include: {
-      assignments: {
-        include: {
-          rubric: { include: { criteria: true } },
-          competency: true,
-          submissions: true,
-        },
-        orderBy: { createdAt: "asc" },
-      },
-      enrollments: true,
-    },
-  });
+  const supabase = createSupabaseAdminClient();
 
-  // Pending evaluations (submissions without faculty evals)
+  // Faculty's courses.
+  const { data: coursesRaw } = await supabase
+    .from("courses")
+    .select(`
+      id,
+      code,
+      name,
+      description,
+      semester,
+      faculty_id,
+      coordinator_id,
+      created_at
+    `)
+    .eq("faculty_id", userId);
+
+  type CourseRow = {
+    id: string;
+    code: string;
+    name: string;
+    description: string | null;
+    semester: string;
+    faculty_id: string;
+    coordinator_id: string | null;
+    created_at: string;
+  };
+
+  const courses = (coursesRaw ?? []) as unknown as CourseRow[];
+
+  // For each course, fetch assignments + enrollments.
+  const coursesWithChildren = await Promise.all(
+    courses.map(async (c) => {
+      const [assignmentsRes, enrollmentsRes] = await Promise.all([
+        supabase
+          .from("assignments")
+          .select(`
+            id,
+            title,
+            description,
+            type,
+            deadline,
+            course_id,
+            competency_id,
+            created_at,
+            competency:competencies (id, code, name, type),
+            rubric:rubrics (id, assignment_id, criteria:rubric_criteria (id, name, description, weight, max_score, rubric_id))
+          `)
+          .eq("course_id", c.id)
+          .order("created_at", { ascending: true }),
+        supabase
+          .from("enrollments")
+          .select("id, user_id, course_id")
+          .eq("course_id", c.id),
+      ]);
+
+      return {
+        course: c,
+        assignments: assignmentsRes.data ?? [],
+        enrollments: enrollmentsRes.data ?? [],
+      };
+    })
+  );
+
+  // Per-assignment stats: count total + evaluated submissions.
   const assignmentsWithStats = await Promise.all(
-    courses.flatMap((c) =>
-      c.assignments.map(async (a) => {
-        const submissions = await db.submission.findMany({
-          where: { assignmentId: a.id },
-          include: { evaluations: { where: { isPeer: false } } },
-        });
-        const evaluated = submissions.filter((s) => s.evaluations.length > 0).length;
+    coursesWithChildren.flatMap((c) =>
+      c.assignments.map(async (a: any) => {
+        const { data: subs } = await supabase
+          .from("submissions")
+          .select("id")
+          .eq("assignment_id", a.id);
+        const totalSubs = subs?.length ?? 0;
+        // Count how many submissions have at least one faculty eval (is_peer=false).
+        const { data: evaluatedSubs } = await supabase
+          .from("evaluations")
+          .select("submission_id", { count: "exact", head: false })
+          .eq("is_peer", false)
+          .in(
+            "submission_id",
+            (subs ?? []).map((s: any) => s.id)
+          );
+        const evaluatedIds = new Set(
+          (evaluatedSubs ?? []).map((e: any) => e.submission_id)
+        );
+        const evaluated = evaluatedIds.size;
         return {
-          ...a,
-          totalSubmissions: submissions.length,
+          ...camelize(a),
+          totalSubmissions: totalSubs,
           evaluated,
-          pending: submissions.length - evaluated,
+          pending: totalSubs - evaluated,
         };
       })
     )
@@ -317,47 +568,69 @@ export async function getFacultyDashboard(userId: string) {
 
   return {
     faculty: { id: userId },
-    courses: courses.map((c) => ({
-      ...c,
-      assignmentCount: c.assignments.length,
-      studentCount: c.enrollments.length,
-      assignments: assignmentsWithStats.filter((a) => a.courseId === c.id),
-    })),
+    courses: coursesWithChildren.map((c) => {
+      const course = camelize(c.course) as any;
+      const assignmentCount = c.assignments.length;
+      const studentCount = c.enrollments.length;
+      const mappedAssignments = c.assignments.map((a: any) => camelize(a));
+      const statsById = new Map(
+        assignmentsWithStats.map((a) => [a.id, a] as const)
+      );
+      return {
+        ...course,
+        assignmentCount,
+        studentCount,
+        enrollments: camelize(c.enrollments),
+        assignments: mappedAssignments.map((a: any) => ({
+          ...a,
+          ...statsById.get(a.id),
+        })),
+      };
+    }),
   };
 }
 
 export async function getMentorDashboard(userId: string) {
-  const mentees = await db.user.findMany({
-    where: { mentorId: userId },
-    include: {
-      submissions: {
-        include: { assignment: true },
-        orderBy: { submittedAt: "asc" },
-      },
-    },
-  });
+  const supabase = createSupabaseAdminClient();
+
+  // Fetch mentees (profiles where mentor_id = userId).
+  const { data: menteesRaw } = await supabase
+    .from("profiles")
+    .select("id, email, name")
+    .eq("mentor_id", userId);
+
+  type MenteeRow = { id: string; email: string; name: string };
+  const mentees = (menteesRaw ?? []) as unknown as MenteeRow[];
 
   const menteesWithScores = await Promise.all(
     mentees.map(async (m) => {
+      // Fetch mentee's submissions + assignment title.
+      const { data: subsRaw } = await supabase
+        .from("submissions")
+        .select("id, assignment_id, submitted_at, assignment:assignments (id, title)")
+        .eq("user_id", m.id)
+        .order("submitted_at", { ascending: true });
+
+      const subs = (subsRaw ?? []) as any[];
+
       const scores = await Promise.all(
-        m.submissions.map(async (s) => {
+        subs.map(async (s) => {
           const sc = await computeFinalScore(s.id);
           return {
-            assignmentTitle: s.assignment.title,
-            assignmentId: s.assignment.id,
-            submittedAt: s.submittedAt,
+            assignmentTitle: s.assignment?.title ?? "Untitled",
+            assignmentId: s.assignment?.id ?? s.assignment_id,
+            submittedAt: s.submitted_at,
             score: sc.finalScore,
           };
         })
       );
-      const validScores = scores.filter((s) => s.score !== null) as {
-        assignmentTitle: string;
-        assignmentId: string;
-        submittedAt: Date;
-        score: number;
-      }[];
 
-      // At-risk: last 2 scores both dropped
+      const validScores = scores.filter(
+        (s): s is { assignmentTitle: string; assignmentId: string; submittedAt: string; score: number } =>
+          s.score !== null
+      );
+
+      // At-risk: last 2 scores both dropped.
       let atRisk = false;
       let trend: "up" | "down" | "stable" | "insufficient" = "insufficient";
       if (validScores.length >= 2) {
@@ -365,18 +638,20 @@ export async function getMentorDashboard(userId: string) {
         const prev = validScores[validScores.length - 2].score;
         if (last < prev) {
           trend = "down";
-          // Check if the previous score also dropped (i.e., 2 consecutive drops)
           if (validScores.length >= 3) {
             const prevPrev = validScores[validScores.length - 3].score;
             if (prev < prevPrev) atRisk = true;
           }
-          // If only 2 scores and both low, still flag
           if (validScores.length === 2 && last < 60) atRisk = true;
         } else if (last > prev) {
           trend = "up";
         } else {
           trend = "stable";
         }
+      }
+      // Also flag if most-recent score is < 40%.
+      if (validScores.length && validScores[validScores.length - 1].score < 40) {
+        atRisk = true;
       }
 
       return {
@@ -385,7 +660,9 @@ export async function getMentorDashboard(userId: string) {
         email: m.email,
         scores: validScores,
         avgScore: validScores.length
-          ? parseFloat((validScores.reduce((a, b) => a + b.score, 0) / validScores.length).toFixed(1))
+          ? parseFloat(
+              (validScores.reduce((a, b) => a + b.score, 0) / validScores.length).toFixed(1)
+            )
           : 0,
         atRisk,
         trend,
@@ -402,87 +679,150 @@ export async function getMentorDashboard(userId: string) {
 }
 
 export async function getCoordinatorDashboard(userId: string) {
-  const courses = await db.course.findMany({
-    where: { coordinatorId: userId },
-    include: {
-      enrollments: { include: { user: { include: { submissions: true } } } },
-      assignments: { include: { competency: true } },
-      competencies: true,
-    },
-  });
+  const supabase = createSupabaseAdminClient();
 
-  // For each course, compute batch stats
+  // Coordinator's courses.
+  const { data: coursesRaw } = await supabase
+    .from("courses")
+    .select("id, code, name, description, semester, faculty_id, coordinator_id, created_at")
+    .eq("coordinator_id", userId);
+
+  type CourseRow = {
+    id: string;
+    code: string;
+    name: string;
+    description: string | null;
+    semester: string;
+    faculty_id: string;
+    coordinator_id: string | null;
+    created_at: string;
+  };
+  const courses = (coursesRaw ?? []) as unknown as CourseRow[];
+
   const courseStats = await Promise.all(
     courses.map(async (c) => {
-      const allSubmissions = await db.submission.findMany({
-        where: { assignment: { courseId: c.id } },
-        include: { assignment: true, user: true },
-      });
+      // Fetch enrollments + students + their submissions.
+      const { data: enrollmentsRaw } = await supabase
+        .from("enrollments")
+        .select("id, user_id, course_id, user:profiles (id, name, email)")
+        .eq("course_id", c.id);
+
+      // Fetch assignments for the course (with competency).
+      const { data: assignmentsRaw } = await supabase
+        .from("assignments")
+        .select(`
+          id,
+          title,
+          description,
+          type,
+          deadline,
+          course_id,
+          competency_id,
+          created_at,
+          competency:competencies (id, code, name, type)
+        `)
+        .eq("course_id", c.id);
+
+      // Fetch competencies for the course.
+      const { data: competenciesRaw } = await supabase
+        .from("competencies")
+        .select("id, code, name, type, course_id, target_level")
+        .eq("course_id", c.id);
+
+      // All submissions for this course (via assignment.course_id).
+      const { data: allSubsRaw } = await supabase
+        .from("submissions")
+        .select("id, assignment_id, user_id, assignment:assignments (id, title, course_id), user:profiles (id, name, email)")
+        .in("assignment.course_id", [c.id]);
+
+      const allSubmissions = (allSubsRaw ?? []) as any[];
+
       const scoresByStudent: Record<string, number[]> = {};
       const scoresByAssignment: Record<string, { title: string; scores: number[] }> = {};
       for (const s of allSubmissions) {
         const sc = await computeFinalScore(s.id);
         if (sc.finalScore !== null) {
-          if (!scoresByStudent[s.userId]) scoresByStudent[s.userId] = [];
-          scoresByStudent[s.userId].push(sc.finalScore);
-          if (!scoresByAssignment[s.assignmentId]) {
-            scoresByAssignment[s.assignmentId] = { title: s.assignment.title, scores: [] };
+          if (!scoresByStudent[s.user_id]) scoresByStudent[s.user_id] = [];
+          scoresByStudent[s.user_id].push(sc.finalScore);
+          const aid = s.assignment_id;
+          if (!scoresByAssignment[aid]) {
+            scoresByAssignment[aid] = {
+              title: s.assignment?.title ?? "Assignment",
+              scores: [],
+            };
           }
-          scoresByAssignment[s.assignmentId].scores.push(sc.finalScore);
+          scoresByAssignment[aid].scores.push(sc.finalScore);
         }
       }
 
-      // Per-student avg
+      // Per-student ranking.
       const ranking = Object.entries(scoresByStudent)
         .map(([sid, scores]) => {
-          const sub = allSubmissions.find((s) => s.userId === sid);
+          const sub = allSubmissions.find((s) => s.user_id === sid);
           return {
             studentId: sid,
-            name: sub?.user.name ?? "Unknown",
-            email: sub?.user.email ?? "",
-            avgScore: parseFloat((scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(1)),
+            name: sub?.user?.name ?? "Unknown",
+            email: sub?.user?.email ?? "",
+            avgScore: parseFloat(
+              (scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(1)
+            ),
             assignmentCount: scores.length,
           };
         })
         .sort((a, b) => b.avgScore - a.avgScore);
 
-      // CO-PO attainment: avg score per competency
+      // CO-PO attainment per competency.
       const coPoAttainment = await Promise.all(
-        c.competencies.map(async (comp) => {
-          const compAssignments = c.assignments.filter((a) => a.competencyId === comp.id);
-          let allScores: number[] = [];
+        (competenciesRaw ?? []).map(async (comp: any) => {
+          const compAssignments = (assignmentsRaw ?? []).filter(
+            (a: any) => a.competency_id === comp.id
+          );
+          const allScores: number[] = [];
           for (const a of compAssignments) {
-            const sub = await db.submission.findMany({ where: { assignmentId: a.id } });
-            for (const s of sub) {
+            const { data: sub } = await supabase
+              .from("submissions")
+              .select("id")
+              .eq("assignment_id", a.id);
+            for (const s of sub ?? []) {
               const sc = await computeFinalScore(s.id);
               if (sc.finalScore !== null) allScores.push(sc.finalScore);
             }
           }
+          const target = comp.target_level ?? 75;
           const avg = allScores.length
-            ? allScores.reduce((a, b) => a + b, 0) / allScores.length
+            ? allScores.reduce((x, y) => x + y, 0) / allScores.length
             : 0;
           return {
             code: comp.code,
             name: comp.name,
             type: comp.type,
             avgAttainment: parseFloat(avg.toFixed(1)),
-            target: comp.targetLevel ?? 75,
-            status: avg >= (comp.targetLevel ?? 75) ? "achieved" : avg >= (comp.targetLevel ?? 75) * 0.8 ? "at-risk" : "below",
+            target,
+            status:
+              avg >= target
+                ? "achieved"
+                : avg >= target * 0.8
+                ? "at-risk"
+                : "below",
           };
         })
       );
 
-      // Trend chart: avg score per assignment over time
+      // Trend: avg score per assignment over time.
       const trend = Object.values(scoresByAssignment).map((a) => ({
         title: a.title,
-        avgScore: parseFloat((a.scores.reduce((x, y) => x + y, 0) / a.scores.length).toFixed(1)),
+        avgScore: parseFloat(
+          (a.scores.reduce((x, y) => x + y, 0) / a.scores.length).toFixed(1)
+        ),
       }));
 
       return {
         course: { id: c.id, code: c.code, name: c.name },
-        studentCount: c.enrollments.length,
+        studentCount: enrollmentsRaw?.length ?? 0,
         batchAverage: ranking.length
-          ? parseFloat((ranking.reduce((a, b) => a + b.avgScore, 0) / ranking.length).toFixed(1))
+          ? parseFloat(
+              (ranking.reduce((a, b) => a + b.avgScore, 0) / ranking.length).toFixed(1)
+            )
           : 0,
         topStudents: ranking.slice(0, 5),
         bottomStudents: ranking.slice(-5).reverse(),
@@ -497,28 +837,72 @@ export async function getCoordinatorDashboard(userId: string) {
 }
 
 export async function getAdminDashboard() {
-  const [users, courses, assignments, submissions, evaluations, feedback, storageStats, notifications] = await Promise.all([
-    db.user.count(),
-    db.course.count(),
-    db.assignment.count(),
-    db.submission.count(),
-    db.evaluation.count(),
-    db.feedback.count(),
-    totalStorageStats().catch(() => ({ count: 0, size: 0, perBucket: {} })),
-    db.notification.count(),
-  ]);
+  const supabase = createSupabaseAdminClient();
 
-  const usersByRole = await db.user.groupBy({ by: ["role"], _count: true });
+  // Head counts for each table (head:true is much cheaper than full select).
+  const [usersRes, coursesRes, assignmentsRes, submissionsRes, evaluationsRes, feedbackRes, notifsRes] =
+    await Promise.all([
+      supabase.from("profiles").select("*", { count: "exact", head: true }),
+      supabase.from("courses").select("*", { count: "exact", head: true }),
+      supabase.from("assignments").select("*", { count: "exact", head: true }),
+      supabase.from("submissions").select("*", { count: "exact", head: true }),
+      supabase.from("evaluations").select("*", { count: "exact", head: true }),
+      supabase.from("feedback").select("*", { count: "exact", head: true }),
+      supabase.from("notifications").select("*", { count: "exact", head: true }),
+    ]);
+
+  const users = usersRes.count ?? 0;
+  const courses = coursesRes.count ?? 0;
+  const assignments = assignmentsRes.count ?? 0;
+  const submissions = submissionsRes.count ?? 0;
+  const evaluations = evaluationsRes.count ?? 0;
+  const feedback = feedbackRes.count ?? 0;
+  const notifications = notifsRes.count ?? 0;
+
+  // Group users by role.
+  const { data: allProfiles } = await supabase
+    .from("profiles")
+    .select("role");
+  const roleCounts: Record<string, number> = {};
+  for (const p of (allProfiles ?? []) as { role: string }[]) {
+    roleCounts[p.role] = (roleCounts[p.role] ?? 0) + 1;
+  }
+  const usersByRole = Object.entries(roleCounts).map(([role, count]) => ({
+    role,
+    count,
+    _count: count, // dashboards accept either shape
+  }));
+
+  // Storage stats from the local storage layer (submissions + avatars buckets).
+  const [subStats, avStats] = await Promise.all([
+    getBucketStats(BUCKETS.submissions).catch(() => ({ count: 0, totalBytes: 0 })),
+    getBucketStats(BUCKETS.avatars).catch(() => ({ count: 0, totalBytes: 0 })),
+  ]);
+  const totalCount = subStats.count + avStats.count;
+  const totalBytes = subStats.totalBytes + avStats.totalBytes;
 
   return {
-    totals: { users, courses, assignments, submissions, evaluations, feedback, notifications },
-    usersByRole: usersByRole.map((u) => ({ role: u.role, count: u._count })),
-    storage: {
-      fileCount: storageStats.count,
-      sizeBytes: storageStats.size,
-      sizeMB: parseFloat((storageStats.size / (1024 * 1024)).toFixed(2)),
-      perBucket: storageStats.perBucket,
+    totals: {
+      users,
+      courses,
+      assignments,
+      submissions,
+      evaluations,
+      feedback,
+      notifications,
     },
+    usersByRole,
+    storage: {
+      fileCount: totalCount,
+      sizeBytes: totalBytes,
+      sizeMB: parseFloat((totalBytes / (1024 * 1024)).toFixed(2)),
+      perBucket: {
+        submissions: subStats,
+        avatars: avStats,
+      },
+    },
+    // Bonus field per migration spec (additive, doesn't break dashboards).
+    storageStats: { count: totalCount, totalBytes },
   };
 }
 
@@ -527,55 +911,184 @@ export async function getAdminDashboard() {
 // ─────────────────────────────────────────────────────────
 
 export async function getAssignmentDetail(assignmentId: string) {
-  return db.assignment.findUnique({
-    where: { id: assignmentId },
-    include: {
-      course: true,
-      rubric: { include: { criteria: true } },
-      competency: true,
-      submissions: {
-        include: {
-          user: true,
-          evaluations: { where: { isPeer: false } },
-          peerReviews: true,
-          similarityReports: true,
-        },
-      },
-    },
+  const supabase = createSupabaseAdminClient();
+
+  const { data: assignment } = await supabase
+    .from("assignments")
+    .select(`
+      id,
+      title,
+      description,
+      type,
+      deadline,
+      course_id,
+      competency_id,
+      created_at,
+      course:courses (id, code, name, description, semester, faculty_id, coordinator_id, created_at),
+      competency:competencies (id, code, name, type, target_level, course_id),
+      rubric:rubrics (
+        id,
+        assignment_id,
+        criteria:rubric_criteria (id, name, description, weight, max_score, rubric_id)
+      )
+    `)
+    .eq("id", assignmentId)
+    .single();
+
+  if (!assignment) return null;
+
+  // Fetch submissions for this assignment + their evaluations / peer reviews / similarity / user.
+  const { data: submissionsRaw } = await supabase
+    .from("submissions")
+    .select(`
+      id,
+      assignment_id,
+      user_id,
+      content,
+      storage_path,
+      mime_type,
+      file_size,
+      file_name,
+      file_url,
+      file_type,
+      status,
+      submitted_at,
+      user:profiles (id, name, email)
+    `)
+    .eq("assignment_id", assignmentId);
+
+  const submissions = (submissionsRaw ?? []) as any[];
+  const submissionIds = submissions.map((s) => s.id);
+
+  let evaluations: any[] = [];
+  let peerReviews: any[] = [];
+  let similarityReports: any[] = [];
+  if (submissionIds.length) {
+    const [eRes, pRes, sRes] = await Promise.all([
+      supabase
+        .from("evaluations")
+        .select("*")
+        .eq("is_peer", false)
+        .in("submission_id", submissionIds),
+      supabase
+        .from("peer_reviews")
+        .select("*")
+        .in("submission_id", submissionIds),
+      supabase
+        .from("similarity_reports")
+        .select("*")
+        .in("submission_id", submissionIds),
+    ]);
+    evaluations = eRes.data ?? [];
+    peerReviews = pRes.data ?? [];
+    similarityReports = sRes.data ?? [];
+  }
+
+  const submissionsWithChildren = submissions.map((s) => {
+    const subEvals = evaluations.filter(
+      (e) => e.submission_id === s.id
+    );
+    const subPeerReviews = peerReviews.filter(
+      (p) => p.submission_id === s.id
+    );
+    const subReports = similarityReports.filter(
+      (r) => r.submission_id === s.id
+    );
+    return camelize({
+      ...s,
+      evaluations: subEvals,
+      peerReviews: subPeerReviews,
+      similarityReports: subReports,
+    });
+  });
+
+  return camelize({
+    ...assignment,
+    submissions: submissionsWithChildren,
   });
 }
 
 export async function getStudentAssignmentList(userId: string) {
-  const enrollments = await db.enrollment.findMany({
-    where: { userId },
-    include: {
-      course: {
-        include: {
-          assignments: {
-            include: { rubric: { include: { criteria: true } }, competency: true },
-            orderBy: { deadline: "asc" },
-          },
-        },
-      },
-    },
-  });
+  const supabase = createSupabaseAdminClient();
 
-  // For each assignment, check if student has a submission
-  const result = [];
+  // Enrollments for this student + their courses' assignments.
+  const { data: enrollmentsRaw } = await supabase
+    .from("enrollments")
+    .select(`
+      id,
+      user_id,
+      course_id,
+      course:courses (
+        id,
+        code,
+        name,
+        description,
+        semester,
+        assignments:assignments (
+          id,
+          title,
+          description,
+          type,
+          deadline,
+          course_id,
+          competency_id,
+          created_at,
+          competency:competencies (id, code, name, type, target_level, course_id),
+          rubric:rubrics (id, assignment_id, criteria:rubric_criteria (id, name, description, weight, max_score, rubric_id))
+        )
+      )
+    `)
+    .eq("user_id", userId);
+
+  type EnrollmentRow = {
+    id: string;
+    user_id: string;
+    course_id: string;
+    course: {
+      id: string;
+      code: string;
+      name: string;
+      description: string | null;
+      semester: string;
+      assignments: any[];
+    } | null;
+  };
+
+  const enrollments = (enrollmentsRaw ?? []) as unknown as EnrollmentRow[];
+
+  const result: any[] = [];
   for (const e of enrollments) {
+    if (!e.course) continue;
     for (const a of e.course.assignments) {
-      const submission = await db.submission.findFirst({
-        where: { assignmentId: a.id, userId },
-        include: { similarityReports: true, feedback: true },
-      });
+      // Check for existing submission by this student for this assignment.
+      const { data: submission } = await supabase
+        .from("submissions")
+        .select(`
+          id,
+          assignment_id,
+          user_id,
+          content,
+          storage_path,
+          mime_type,
+          file_size,
+          file_name,
+          file_url,
+          file_type,
+          status,
+          submitted_at,
+          similarityReports:similarity_reports (id, submission_id, similarity, auto_score, feedback_text, provider),
+          feedback:feedback (id, text, created_at, author_id, recipient_id, source, submission_id)
+        `)
+        .eq("assignment_id", a.id)
+        .eq("user_id", userId)
+        .maybeSingle();
+
       const scores = submission ? await computeFinalScore(submission.id) : null;
       result.push({
-        ...a,
+        ...camelize(a),
         courseCode: e.course.code,
         courseName: e.course.name,
-        submission: submission
-          ? { ...submission, scores }
-          : null,
+        submission: submission ? { ...camelize(submission), scores } : null,
       });
     }
   }
